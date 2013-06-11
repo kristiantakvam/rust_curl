@@ -36,13 +36,14 @@ extern {
 
 #[deriving(Eq)]
 pub struct Curl {
-    priv curl: *CURL
+    priv curl: *CURL,
+    priv h_list: *mut* curl_slist
 }
 
 impl Curl {
     pub fn new() -> Curl {
         unsafe {
-            Curl {curl: curl_easy_init() }
+            Curl {curl: curl_easy_init(), h_list: (0 as *mut* curl_slist)}
         }
     }
     
@@ -83,9 +84,32 @@ impl Curl {
         }
     }
     
-    pub fn easy_perform(&self) -> code::Code {
+    pub fn easy_perform(&self, hs: Option<&HashMap<~str,~str>>) -> code::Code {
         unsafe {
-            let raw_code = curl_easy_perform(self.curl);
+            
+            let raw_code = match hs {
+                None => { curl_easy_perform(self.curl) }
+                Some(headers) => {
+            
+                    let mut list = 0 as *curl_slist;
+                    
+                    for headers.each |&k, &v| {
+                        let h = fmt!("%s: %s",k,v);
+                        println(h);
+                        
+                        do h.as_c_str |s| {
+                            list = curl_slist_append(list,s);
+                        }
+                    }
+                    
+                    self.easy_setopt(opt::HTTPHEADER,list);
+                    let rc = curl_easy_perform(self.curl);
+                    curl_slist_free_all(list);
+                    
+                    rc
+                }
+            };
+            
             transmute(raw_code as i64)
         }
     }
@@ -105,32 +129,13 @@ impl Curl {
             let ret = from_c_str(raw);
             ret
         }
-    }
-    
-    pub fn add_headers(&self, headers: &HashMap<~str,~str>) -> code::Code {
-        unsafe {
-            let mut list = 0 as *curl_slist;
-        
-            for headers.each |&k, &v| {
-                let h = fmt!("%s: %s",k,v);
-                do h.as_c_str |s| {
-                    list = curl_slist_append(list,s);
-                }
-            }
-        
-            if list != 0 as *curl_slist { 
-                curl_slist_free_all(list); 
-            }
-            self.easy_setopt(opt::HTTPHEADER,list)
-        }
-    }                                         
-            
+    }            
 }
 
 impl Clone for Curl {
     pub fn clone(&self) -> Curl {
         unsafe {
-            Curl {curl: curl_easy_duphandle(self.curl) }
+            Curl {curl: curl_easy_duphandle(self.curl), h_list: self.h_list}
         }
     }
 }
@@ -159,7 +164,7 @@ extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: 
     
     let head = unsafe { from_c_str_len(data,(size * nmemb) as uint) };
     
-    let colon_res = do find(head) |c| { c == ':' };
+    let colon_res = head.find(':');
     if colon_res.is_none() { return size * nmemb; }
     
     let colon = colon_res.get();
@@ -197,7 +202,7 @@ fn test_basic_functionality() {
     curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
     let s = ~"";
     curl.easy_setopt(opt::WRITEDATA, &s);
-    let err = curl.easy_perform();
+    let err = curl.easy_perform(None);
     assert!(err == code::CURLE_OK);
 }
 
@@ -214,19 +219,6 @@ fn test_get_headers() {
     let headers: HashMap<~str,~str> = HashMap::new();
     curl.easy_setopt(opt::HEADERDATA,&headers);
     
-    let err = curl.easy_perform();
-    assert!(err == code::CURLE_OK);
-}
-
-#[test]
-fn test_add_headers() {
-    use super::headers;
-    
-    println("IN");
-    let curl = Curl::new();
-    let mut headers = HashMap::new();
-    headers.insert(headers::request::ACCEPT.to_owned(), ~"text/plain");
-    
-    let err = curl.add_headers(&headers);
+    let err = curl.easy_perform(None);
     assert!(err == code::CURLE_OK);
 }

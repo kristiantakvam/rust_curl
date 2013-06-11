@@ -30,9 +30,12 @@ impl HttpClient {
         let headers: HashMap<~str,~str> = HashMap::new();
         self.curl.easy_setopt(opt::HEADERDATA,&headers);
         
-        self.curl.add_headers(&req.headers);
-    
-        let err = self.curl.easy_perform();
+        let err = if !req.headers.is_empty() {
+            self.curl.easy_perform(Some(&req.headers))
+        } else {
+            self.curl.easy_perform(None)
+        };
+        
         if err != code::CURLE_OK {
             return Err(Curl::easy_strerror(err));
         }
@@ -46,6 +49,7 @@ impl HttpClient {
 extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::vec::raw::from_buf_raw;
     
+    println(fmt!("%u",size*nmemb as uint));
     let body: &mut ~[u8] = unsafe { transmute(user_data) };
     unsafe { body.push_all_move(from_buf_raw(data,(size * nmemb) as uint)); }
     size * nmemb
@@ -55,9 +59,10 @@ extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: 
     use std::str::raw::from_c_str_len;
     use std::str::*;
     
+    println(fmt!("%u",size*nmemb as uint));
     let head = unsafe { from_c_str_len(data,(size * nmemb) as uint) };
     
-    let colon_res = do find(head) |c| { c == ':' };
+    let colon_res = head.find(':');
     if colon_res.is_none() { return size * nmemb; }
     
     let colon = colon_res.get();
