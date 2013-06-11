@@ -1,0 +1,31 @@
+extern mod extra;
+    
+
+pub mod headers;
+pub mod request;
+pub mod response;
+#[path="curl/curl.rs"]
+pub mod curl;
+pub mod http_client;
+    
+fn main() {
+    use std::hashmap::HashMap;
+    use request::Request;
+    use std::str::from_bytes;
+    
+    let client = http_client::HttpClient::new();
+    
+    let url = "http://api.4chan.org/pol/threads.json";
+    let mut headers = HashMap::new();
+    headers.insert(headers::request::ACCEPT.to_owned(),~"application/json");
+
+    let req = Request::new(url.to_owned(),headers,~[]);
+    
+    let resp = client.exec(&req).get();
+    
+    for resp.headers.each |&k, &v| {
+        println(fmt!("%s: %s",k,v));
+    }
+    
+    println(from_bytes(resp.body));
+}
