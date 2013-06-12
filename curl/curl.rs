@@ -36,14 +36,13 @@ extern {
 
 #[deriving(Eq)]
 pub struct Curl {
-    priv curl: *CURL,
-    priv h_list: *mut* curl_slist
+    priv curl: *CURL
 }
 
 impl Curl {
     pub fn new() -> Curl {
         unsafe {
-            Curl {curl: curl_easy_init(), h_list: (0 as *mut* curl_slist)}
+            Curl {curl: curl_easy_init()}
         }
     }
     
@@ -95,7 +94,6 @@ impl Curl {
                     
                     for headers.each |&k, &v| {
                         let h = fmt!("%s: %s",k,v);
-                        println(h);
                         
                         do h.as_c_str |s| {
                             list = curl_slist_append(list,s);
@@ -135,7 +133,7 @@ impl Curl {
 impl Clone for Curl {
     pub fn clone(&self) -> Curl {
         unsafe {
-            Curl {curl: curl_easy_duphandle(self.curl), h_list: self.h_list}
+            Curl {curl: curl_easy_duphandle(self.curl)}
         }
     }
 }
@@ -180,17 +178,19 @@ extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: 
 fn test_init_clone() {
     let c1 = Curl::new();
     let c2 = c1.clone();
-    assert!(c1 != c2);
+
+    assert!(c1.curl != c2.curl);
 }
 
 #[test]
 fn test_easy_escape() {
     let c1 = Curl::new();
 
-    let query = ~"lol and stuff";
+    let query = "lol and stuff";
     let escaped_query = c1.easy_escape(query);
-    assert!(escaped_query == ~"lol%20and%20stuff");
     let unescaped_query = c1.easy_unescape(escaped_query);
+    
+    assert!(escaped_query == "lol%20and%20stuff");
     assert!(unescaped_query == query);
 }
 
@@ -203,6 +203,8 @@ fn test_basic_functionality() {
     let s = ~"";
     curl.easy_setopt(opt::WRITEDATA, &s);
     let err = curl.easy_perform(None);
+    
+    assert!(!s.is_empty());
     assert!(err == code::CURLE_OK);
 }
 
@@ -220,5 +222,7 @@ fn test_get_headers() {
     curl.easy_setopt(opt::HEADERDATA,&headers);
     
     let err = curl.easy_perform(None);
+    assert!(!headers.is_empty());
+    assert!(!s.is_empty());
     assert!(err == code::CURLE_OK);
 }

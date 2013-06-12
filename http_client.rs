@@ -49,7 +49,6 @@ impl HttpClient {
 extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::vec::raw::from_buf_raw;
     
-    println(fmt!("%u",size*nmemb as uint));
     let body: &mut ~[u8] = unsafe { transmute(user_data) };
     unsafe { body.push_all_move(from_buf_raw(data,(size * nmemb) as uint)); }
     size * nmemb
@@ -59,7 +58,6 @@ extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: 
     use std::str::raw::from_c_str_len;
     use std::str::*;
     
-    println(fmt!("%u",size*nmemb as uint));
     let head = unsafe { from_c_str_len(data,(size * nmemb) as uint) };
     
     let colon_res = head.find(':');
