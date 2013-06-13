@@ -2,7 +2,7 @@ use std::hashmap::HashMap;
 use std::libc::{size_t,c_char};
 use std::cast::transmute;
 
-use curl::{opt,code,Curl};
+use curl::*;
 use request::*;
 use response::Response;
 
@@ -30,10 +30,26 @@ impl HttpClient {
         let headers: HashMap<~str,~str> = HashMap::new();
         self.curl.easy_setopt(opt::HEADERDATA,&headers);
         
-        let err = if !req.headers.is_empty() {
-            self.curl.easy_perform(Some(&req.headers))
-        } else {
-            self.curl.easy_perform(None)
+        let err = match req.headers.is_empty() {
+            true => { self.curl.easy_perform() }
+            false => { 
+                unsafe {
+                    let mut list = 0 as *curl_slist;
+                    
+                    for req.headers.each |&k, &v| {
+                        let h = fmt!("%s: %s",k,v);
+                        
+                        do h.as_c_str |s| {
+                            list = curl_slist_append(list,s);
+                        }
+                    }
+                    
+                    self.curl.easy_setopt(opt::HTTPHEADER,list);
+                    let rc = self.curl.easy_perform();
+                    curl_slist_free_all(list);
+                    rc
+                }
+            }
         };
         
         if err != code::CURLE_OK {

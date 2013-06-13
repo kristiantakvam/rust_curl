@@ -1,4 +1,4 @@
-use std::libc::{size_t,c_int,c_void,c_char,c_longlong};
+use std::libc::{size_t,c_int,c_void,c_char};
 use std::cast::transmute;
 use std::hashmap::HashMap;
 
@@ -9,29 +9,29 @@ type CURL = ();
 type CURLcode = c_int;
 type CURLINFO = c_int;
 
-struct curl_slist {
+pub struct curl_slist {
     data: *c_char,
     next: *curl_slist
 }
 
 #[link_args = "-lcurl"]
 extern {
-    fn curl_easy_cleanup(handle: *CURL) -> c_void;
-    fn curl_easy_duphandle(handle: *CURL) -> *CURL;
-    fn curl_easy_escape(curl: *CURL, url: *c_char, length: c_int) -> *c_char;
+    pub fn curl_easy_cleanup(handle: *CURL) -> c_void;
+    pub fn curl_easy_duphandle(handle: *CURL) -> *CURL;
+    pub fn curl_easy_escape(curl: *CURL, url: *c_char, length: c_int) -> *c_char;
     // Skipping get_info
-    fn curl_easy_init() -> *CURL;
-    fn curl_easy_perform(curl: *CURL) -> CURLcode;
+    pub fn curl_easy_init() -> *CURL;
+    pub fn curl_easy_perform(curl: *CURL) -> CURLcode;
     // Skipping curl_easy_recv
-    fn curl_easy_reset(curl: *CURL) -> c_void;
+    pub fn curl_easy_reset(curl: *CURL) -> c_void;
     // Skipping curl_easy_send
-    fn curl_easy_setopt(handle: *CURL, opt: c_int, val: c_longlong) -> CURLcode;
-    fn curl_easy_strerror(err: CURLcode) -> *c_char;
-    fn curl_easy_unescape(curl: *CURL, url: *c_char, inlength: c_int, outlength: *c_int) -> *c_char;
-    fn curl_free(ptr: *c_char) -> c_void;
+    pub fn curl_easy_setopt(handle: *CURL, opt: c_int, val: *c_void) -> CURLcode;
+    pub fn curl_easy_strerror(err: CURLcode) -> *c_char;
+    pub fn curl_easy_unescape(curl: *CURL, url: *c_char, inlength: c_int, outlength: *c_int) -> *c_char;
+    pub fn curl_free(ptr: *c_char) -> c_void;
     
-    fn curl_slist_append(list: *curl_slist, s: *c_char) -> *curl_slist;
-    fn curl_slist_free_all(list: *curl_slist) -> c_void;
+    pub fn curl_slist_append(list: *curl_slist, s: *c_char) -> *curl_slist;
+    pub fn curl_slist_free_all(list: *curl_slist) -> c_void;
 }
 
 #[deriving(Eq)]
@@ -83,30 +83,10 @@ impl Curl {
         }
     }
     
-    pub fn easy_perform(&self, hs: Option<&HashMap<~str,~str>>) -> code::Code {
+    pub fn easy_perform(&self) -> code::Code {
         unsafe {
             
-            let raw_code = match hs {
-                None => { curl_easy_perform(self.curl) }
-                Some(headers) => {
-            
-                    let mut list = 0 as *curl_slist;
-                    
-                    for headers.each |&k, &v| {
-                        let h = fmt!("%s: %s",k,v);
-                        
-                        do h.as_c_str |s| {
-                            list = curl_slist_append(list,s);
-                        }
-                    }
-                    
-                    self.easy_setopt(opt::HTTPHEADER,list);
-                    let rc = curl_easy_perform(self.curl);
-                    curl_slist_free_all(list);
-                    
-                    rc
-                }
-            };
+            let raw_code = curl_easy_perform(self.curl);
             
             transmute(raw_code as i64)
         }
