@@ -1,3 +1,9 @@
+#[crate_type = "lib"];
+#[desc="Rust Curl"];
+#[author="Mark Edward Sinclair"];
+#[license="BSD"];
+#[link(name = "rust_curl")];
+
 extern mod extra;
 
 pub mod headers;
@@ -6,7 +12,9 @@ pub mod response;
 #[path="curl/curl.rs"]
 pub mod curl;
 pub mod http_client;
-    
+
+
+
 fn main() {
     use std::hashmap::HashMap;
     use request::Request;
