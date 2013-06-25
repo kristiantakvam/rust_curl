@@ -6,18 +6,46 @@ use curl::*;
 use request::*;
 use response::Response;
 
+/// Rather opaque struct serving as HttpClient
 #[deriving(Clone)]
 pub struct HttpClient {
     priv curl: Curl
 }
 
 impl HttpClient {
+	/// Return a new HttpClient object
+	/// # Example
+	/// ~~~ {.rust}
+	/// let client = HttpClient::new();
+	/// ~~~
     pub fn new() -> HttpClient {
         let cl = HttpClient { curl: Curl::new() };
         cl.curl.easy_setopt(opt::FOLLOWLOCATION,1);
         cl
     }
 
+	/// Execute the given request
+	/// # Arguments
+	/// * req -	request to be executed
+	/// # Example
+	/// ~~~ {.rust}
+	/// use headers;
+	///
+    /// let client = HttpClient::new();
+    ///
+    /// let url = "http://api.4chan.org/pol/threads.json";
+    /// let mut headers = HashMap::new();
+    /// headers.insert(headers::request::ACCEPT.to_owned(),~"application/json");
+    ///
+    /// let req = Request::new(url.to_owned(),headers,~[]);
+    ///
+    /// let resp_res = client.exec(&req);
+    ///
+    /// match resp_res {
+	/// 	Ok(_) => { ; }
+	/// 	Err(msg) => { fail!("Error" + msg); }
+	/// };
+	/// ~~~
     pub fn exec(&self, req: &Request) -> Result<Response,~str> {
         let url = req.url.to_str();
         do url.as_c_str |c_str| { self.curl.easy_setopt(opt::URL,c_str); }

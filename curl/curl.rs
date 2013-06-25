@@ -183,6 +183,21 @@ pub fn easy_strerror(c: code::Code) -> ~str {
     }
 }
 
+/// Convenience function to fetch the body of HTTP response at the
+/// given URL. You are responsible for ensuring it's properly escaped/
+/// # Arguments
+/// * url - url to fetch body from
+/// # Example
+/// ~~~ {.rust}
+/// use std::str::from_bytes;
+///
+/// let data_res = get("http://api.4chan.org/pol/threads.json");
+///	
+/// match data_res {
+/// 	Ok(data) => { println(from_bytes(data)); }
+/// 	Err(msg) => { fail!("Error" + msg); }
+/// };
+/// ~~~
 pub fn get(url: &str) -> Result<~[u8],~str> {
 	let curl = Curl::new();
 	do url.as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }

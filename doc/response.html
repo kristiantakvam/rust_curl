@@ -15,7 +15,7 @@
 <div class='index'>
 
 <ul>
-<li><a href="#struct-response">Struct <code>Response</code></a></li>
+<li><a href="#struct-response">Struct <code>Response</code></a> - Represents an HTTP response</li>
 <li><a href="#implementation-of-stdto_strtostr-for-response">Implementation <code>of ::std::to_str::ToStr for Response</code></a> - Automatically derived.</li>
 <li><a href="#implementation-for-response">Implementation <code>for Response</code></a></li>
 </ul>
@@ -27,6 +27,7 @@
     headers: Headers,
     body: ~[u8],
 }</code></pre>
+<p>Represents an HTTP response</p>
 </div>
 <div class="section level2" id="implementation-of-stdto_strtostr-for-response">
 <h2>Implementation of <code>::std::to_str::ToStr</code> for <code>Response</code></h2>
@@ -41,6 +42,36 @@
 <div class="section level3" id="method-new">
 <h3>Method <code>new</code></h3>
 <pre class="rust"><code>fn new(headers: Headers, body: ~[u8]) -&gt; Response</code></pre>
+<p>Creates a new response struct</p>
+<div class="section level4" id="arguments">
+<h4>Arguments</h4>
+<ul>
+<li>headers - the HTTP headers from the response</li>
+<li>body - the body of the HTTP response</li>
+</ul>
+</div>
+<div class="section level4" id="example">
+<h4>Example</h4>
+<pre class="rust"><code>use std::str::from_bytes
+
+let client = HttpClient::new();
+
+let url = &quot;http://api.4chan.org/pol/threads.json&quot;;
+
+let req = Request::new(url.to_owned(),HashMap::new(),~[]);
+
+let resp_res = client.exec(&amp;req);
+ 
+match resp_res {
+    code::CURLE_OK =&gt; {
+        for resp.headers.iter().advance | (&amp;k, &amp;v) | {
+            println(fmt!(&quot;%s: %s&quot;,k,v));
+        }
+        println(from_bytes(resp.bod));
+    }
+    Err(msg) =&gt; { fail!(&quot;Error&quot; + msg); }
+};</code></pre>
+</div>
 </div>
 </div>
 </body>

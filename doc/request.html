@@ -15,8 +15,8 @@
 <div class='index'>
 
 <ul>
-<li><a href="#enum-method">Enum <code>Method</code></a></li>
-<li><a href="#struct-request">Struct <code>Request</code></a></li>
+<li><a href="#enum-method">Enum <code>Method</code></a> - Represents HTTP request methods</li>
+<li><a href="#struct-request">Struct <code>Request</code></a> - The HTTP request struct</li>
 <li><a href="#implementation-of-stdto_strtostr-for-request">Implementation <code>of ::std::to_str::ToStr for Request</code></a> - Automatically derived.</li>
 <li><a href="#implementation-for-request">Implementation <code>for Request</code></a></li>
 </ul>
@@ -24,6 +24,7 @@
 
 <div class="section level2" id="enum-method">
 <h2>Enum <code>Method</code></h2>
+<p>Represents HTTP request methods</p>
 <div class="section level4" id="variants">
 <h4>Variants</h4>
 <ul>
@@ -39,6 +40,7 @@
     headers: Headers,
     body: ~[u8],
 }</code></pre>
+<p>The HTTP request struct</p>
 </div>
 <div class="section level2" id="implementation-of-stdto_strtostr-for-request">
 <h2>Implementation of <code>::std::to_str::ToStr</code> for <code>Request</code></h2>
@@ -54,6 +56,23 @@
 <h3>Method <code>new</code></h3>
 <pre class="rust"><code>fn new(url: ~str, headers: Headers, body: ~[u8]) -&gt; Request</code></pre>
 <p>Create a new Request</p>
+<div class="section level4" id="arguments">
+<h4>Arguments</h4>
+<ul>
+<li>url - the URL of the request, properly escaped</li>
+<li>headers - the HTTP headers you choose to use</li>
+<li>body - the body of the request</li>
+</ul>
+</div>
+<div class="section level4" id="example">
+<h4>Example</h4>
+<pre class="rust"><code>use std::hashmap::HashMap;
+ 
+let mut headers = HashMap::new();
+headers.insert(headers::request::ACCEPT.to_owned(),~&quot;application/json&quot;);
+
+let req = Request::new(url.to_owned(),headers,~[]);</code></pre>
+</div>
 </div>
 </div>
 </body>

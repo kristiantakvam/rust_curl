@@ -21,8 +21,8 @@
 <li><a href="#implementation-for-curl">Implementation <code>for Curl</code></a></li>
 <li><a href="#implementation-of-clone-for-curl">Implementation <code>of Clone for Curl</code></a></li>
 <li><a href="#implementation-of-drop-for-curl">Implementation <code>of Drop for Curl</code></a></li>
-<li><a href="#function-easy_strerror">Function <code>easy_strerror</code></a></li>
-<li><a href="#function-get">Function <code>get</code></a></li>
+<li><a href="#function-easy_strerror">Function <code>easy_strerror</code></a> - Converts a curl::code into a it's error string</li>
+<li><a href="#function-get">Function <code>get</code></a> - Convenience function to fetch the body of HTTP response at the given URL</li>
 <li><a href="curl_code.html">Module <code>curl::code</code></a></li>
 <li><a href="curl_opt.html">Module <code>curl::opt</code></a></li>
 </ul>
@@ -137,6 +137,7 @@ curl.easy_setopt(opt::HEADER,1);</code></pre>
 <div class="section level4" id="example-4">
 <h4>Example</h4>
 <pre class="rust"><code>let curl = Curl::new();
+do &quot;www.google.com&quot;.as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
 curl.easy_setopt(opt::HEADER,1);
 curl.easy_perform();</code></pre>
 </div>
@@ -149,7 +150,7 @@ curl.easy_perform();</code></pre>
 <h4>Example</h4>
 <pre class="rust"><code>let curl = Curl::new();
 curl.easy_setopt(opt::HEADER,1);
-curl.easy_rest();</code></pre>
+curl.easy_reset();</code></pre>
 </div>
 </div>
 </div>
@@ -170,10 +171,42 @@ curl.easy_rest();</code></pre>
 <div class="section level2" id="function-easy_strerror">
 <h2>Function <code>easy_strerror</code></h2>
 <pre class="rust"><code>fn easy_strerror(c: code::Code) -&gt; ~str</code></pre>
+<p>Converts a curl::code into a it's error string.</p>
+<div class="section level4" id="arguments-3">
+<h4>Arguments</h4>
+<ul>
+<li>c - code to get error string from</li>
+</ul>
+</div>
+<div class="section level4" id="example-6">
+<h4>Example</h4>
+<pre class="rust"><code>let curl = Curl::new();
+do &quot;www.google.com&quot;.as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
+let err = curl.easy_perform();
+let err_str = easy_strerror(err);</code></pre>
+</div>
 </div>
 <div class="section level2" id="function-get">
 <h2>Function <code>get</code></h2>
 <pre class="rust"><code>fn get(url: &amp;str) -&gt; Result&lt;~[u8], ~str&gt;</code></pre>
+<p>Convenience function to fetch the body of HTTP response at the given URL. You are responsible for ensuring it's properly escaped/</p>
+<div class="section level4" id="arguments-4">
+<h4>Arguments</h4>
+<ul>
+<li>url - url to fetch body from</li>
+</ul>
+</div>
+<div class="section level4" id="example-7">
+<h4>Example</h4>
+<pre class="rust"><code>use std::str::from_bytes;
+
+let data_res = get(&quot;http://api.4chan.org/pol/threads.json&quot;);
+    
+match data_res {
+    Ok(data) =&gt; { println(from_bytes(data)); }
+    Err(msg) =&gt; { fail!(&quot;Error&quot; + msg); }
+};</code></pre>
+</div>
 </div>
 </body>
 </html>

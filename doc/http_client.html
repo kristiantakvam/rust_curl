@@ -15,7 +15,7 @@
 <div class='index'>
 
 <ul>
-<li><a href="#struct-httpclient">Struct <code>HttpClient</code></a></li>
+<li><a href="#struct-httpclient">Struct <code>HttpClient</code></a> - Rather opaque struct serving as HttpClient</li>
 <li><a href="#implementation-of-stdcloneclone-for-httpclient">Implementation <code>of ::std::clone::Clone for HttpClient</code></a> - Automatically derived.</li>
 <li><a href="#implementation-for-httpclient">Implementation <code>for HttpClient</code></a></li>
 </ul>
@@ -26,6 +26,7 @@
 <pre class="rust"><code>pub struct HttpClient {
     priv curl: Curl,
 }</code></pre>
+<p>Rather opaque struct serving as HttpClient</p>
 </div>
 <div class="section level2" id="implementation-of-stdcloneclone-for-httpclient">
 <h2>Implementation of <code>::std::clone::Clone</code> for <code>HttpClient</code></h2>
@@ -40,10 +41,41 @@
 <div class="section level3" id="method-new">
 <h3>Method <code>new</code></h3>
 <pre class="rust"><code>fn new() -&gt; HttpClient</code></pre>
+<p>Return a new HttpClient object</p>
+<div class="section level4" id="example">
+<h4>Example</h4>
+<pre class="rust"><code>let client = HttpClient::new();</code></pre>
+</div>
 </div>
 <div class="section level3" id="method-exec">
 <h3>Method <code>exec</code></h3>
 <pre class="rust"><code>fn exec(&amp;self, req: &amp;Request) -&gt; Result&lt;Response, ~str&gt;</code></pre>
+<p>Execute the given request</p>
+<div class="section level4" id="arguments">
+<h4>Arguments</h4>
+<ul>
+<li>req - request to be executed</li>
+</ul>
+</div>
+<div class="section level4" id="example-1">
+<h4>Example</h4>
+<pre class="rust"><code>use headers;
+
+let client = HttpClient::new();
+
+let url = &quot;http://api.4chan.org/pol/threads.json&quot;;
+let mut headers = HashMap::new();
+headers.insert(headers::request::ACCEPT.to_owned(),~&quot;application/json&quot;);
+
+let req = Request::new(url.to_owned(),headers,~[]);
+
+let resp_res = client.exec(&amp;req);
+
+match resp_res {
+    Ok(_) =&gt; { ; }
+    Err(msg) =&gt; { fail!(&quot;Error&quot; + msg); }
+};</code></pre>
+</div>
 </div>
 </div>
 </body>

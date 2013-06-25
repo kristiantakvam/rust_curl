@@ -15,32 +15,46 @@
 <div class='index'>
 
 <ul>
-<li><a href="#function-example_basic_client">Function <code>example_basic_client</code></a> - this function is an example of the http_client usage</li>
-<li><a href="#function-example_basic_functionality">Function <code>example_basic_functionality</code></a> - this shows some very basic usage of the curl_easy* interface</li>
-<li><a href="#function-example_client_more">Function <code>example_client_more</code></a> - a bit more advanced http_client usage</li>
-<li><a href="#function-example_get">Function <code>example_get</code></a> - this function is an example of the simplest functionality</li>
+<li><a href="#function-example_basic_client">Function <code>example_basic_client</code></a> - This function is an example of the http_client usage</li>
+<li><a href="#function-example_basic_functionality">Function <code>example_basic_functionality</code></a> - This shows some very basic usage of the curl_easy* interface</li>
+<li><a href="#function-example_client_more">Function <code>example_client_more</code></a> - A bit more advanced http_client usage</li>
+<li><a href="#function-example_get">Function <code>example_get</code></a> - This function is an example of the simplest functionality</li>
+<li><a href="#function-header_fn">Function <code>header_fn</code></a> - This function is passed as the HEADERFUNCTION variable in curl::easy_setopt</li>
+<li><a href="#function-write_fn">Function <code>write_fn</code></a> - This function is passed as the WRITEFUNCTION variable in curl::easy_setopt</li>
 </ul>
 </div>
 
 <div class="section level2" id="function-example_basic_client">
 <h2>Function <code>example_basic_client</code></h2>
 <pre class="rust"><code>fn example_basic_client()</code></pre>
-<p>this function is an example of the http_client usage</p>
+<p>This function is an example of the http_client usage</p>
 </div>
 <div class="section level2" id="function-example_basic_functionality">
 <h2>Function <code>example_basic_functionality</code></h2>
 <pre class="rust"><code>fn example_basic_functionality()</code></pre>
-<p>this shows some very basic usage of the curl_easy* interface</p>
+<p>This shows some very basic usage of the curl_easy* interface</p>
 </div>
 <div class="section level2" id="function-example_client_more">
 <h2>Function <code>example_client_more</code></h2>
 <pre class="rust"><code>fn example_client_more()</code></pre>
-<p>a bit more advanced http_client usage</p>
+<p>A bit more advanced http_client usage</p>
 </div>
 <div class="section level2" id="function-example_get">
 <h2>Function <code>example_get</code></h2>
 <pre class="rust"><code>fn example_get()</code></pre>
-<p>this function is an example of the simplest functionality</p>
+<p>This function is an example of the simplest functionality</p>
+</div>
+<div class="section level2" id="function-header_fn">
+<h2>Function <code>header_fn</code></h2>
+<pre class="rust"><code>extern fn header_fn(data: *c_char, size: size_t, nmemb: size_t,
+                    user_data: *()) -&gt; size_t</code></pre>
+<p>This function is passed as the HEADERFUNCTION variable in curl::easy_setopt. It's a simple demo. You can reimplement similar functions as needed in curl::easy_setopt</p>
+</div>
+<div class="section level2" id="function-write_fn">
+<h2>Function <code>write_fn</code></h2>
+<pre class="rust"><code>extern fn write_fn(data: *u8, size: size_t, nmemb: size_t, user_data: *()) -&gt;
+ size_t</code></pre>
+<p>This function is passed as the WRITEFUNCTION variable in curl::easy_setopt. It's a simple demo. You can reimplement similar functions as needed in curl::easy_setopt</p>
 </div>
 </body>
 </html>

@@ -6,6 +6,8 @@ macro_rules! str_const(
     )
 )
 
+/// This module contains static strings of the HTTP request headers
+/// found on https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requests
 pub mod request {
     pub static ACCEPT: &'static str = "Accept";
     pub static ACCEPT_CHARSET: &'static str = "Accept-Charset";
@@ -36,6 +38,8 @@ pub mod request {
     str_const!(WARNING "Warning")
 }
 
+/// This module contains static strings of the HTTP response headers
+/// found on https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Responses
 pub mod response {
     str_const!(ACCESS_CONTROL_ALLOW_ORIGIN "Access-Control-Allow-Origin")
     str_const!(ACCEPT_RANGES "Accept-Ranges")
@@ -74,4 +78,5 @@ pub mod response {
     str_const!(WWW_AUTHENTICATE "WWW-Authenticate")
 }
 
+/// This is a simple type alias for a map of headers
 pub type Headers = HashMap<~str,~str>;

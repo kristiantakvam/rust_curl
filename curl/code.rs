@@ -1,3 +1,5 @@
+/// The various error codes that can be returned from
+/// various cURL operations
 #[deriving(Eq)]
 pub enum Code {
   CURLE_OK = 0,

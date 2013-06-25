@@ -3,7 +3,7 @@ use std::hashmap::HashMap;
 use std::libc::{size_t,c_char};
 use std::cast::transmute;
 
-/// this function is an example of the simplest functionality
+/// This function is an example of the simplest functionality
 pub fn example_get() {
 	use std::str::from_bytes;
 	
@@ -15,7 +15,7 @@ pub fn example_get() {
 	};
 }
 
-/// this function is an example of the http_client usage
+/// This function is an example of the http_client usage
 pub fn example_basic_client() {
 	use http_client::HttpClient;
 	use std::hashmap::HashMap;
@@ -36,7 +36,7 @@ pub fn example_basic_client() {
 	};
 }
 
-/// a bit more advanced http_client usage
+/// A bit more advanced http_client usage
 pub fn example_client_more() {
 	use http_client::HttpClient;
 	use std::hashmap::HashMap;
@@ -71,9 +71,10 @@ pub fn example_client_more() {
 // You should check the curl_easy* docs located here:
 // http://curl.haxx.se/libcurl/c/libcurl-easy.html
 
-/// This function is passed as the WRITEFUNCTION variable
+/// This function is passed as the WRITEFUNCTION variable in curl::easy_setopt.
+/// It's a simple demo. You can reimplement similar functions as needed
 /// in curl::easy_setopt
-extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
+pub extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::vec::raw::from_buf_raw;
     
     let s: &mut ~[u8] = unsafe { transmute(user_data) };
@@ -82,9 +83,10 @@ extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) 
     size * nmemb
 }
 
-/// This function is passed as the HEADERFUNCTION variable
+/// This function is passed as the HEADERFUNCTION variable in curl::easy_setopt.
+/// It's a simple demo. You can reimplement similar functions as needed
 /// in curl::easy_setopt
-extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
+pub extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::str::raw::from_c_str_len;
     use std::str::*;
     
@@ -102,7 +104,7 @@ extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: 
     size * nmemb
 }
 
-/// this shows some very basic usage of the curl_easy* interface
+/// This shows some very basic usage of the curl_easy* interface
 pub fn example_basic_functionality() {
 	use curl::Curl;
 	use curl::code;
