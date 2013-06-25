@@ -12,7 +12,7 @@ static OFF_T: i32 = 30_000i32;
 
  /* This is the FILE * or void * the regular output should be written to. */
   CINIT!(FILE, OBJECTPOINT, 1)
-  
+
   pub static WRITEDATA: i32 = FILE;
 
   /* The full URL to get/put */
@@ -121,7 +121,7 @@ static OFF_T: i32 = 30_000i32;
   /* send FILE * or void * to store headers to, if you use a callback it
      is simply passed to the callback unmodified */
   CINIT!(WRITEHEADER, OBJECTPOINT, 29)
-  
+
   pub static HEADERDATA: i32 = WRITEHEADER;
 
   /* point to a file to read the initial cookies from, also enables
@@ -391,7 +391,7 @@ static OFF_T: i32 = 30_000i32;
      essentially places a demand on the FTP server to acknowledge commands
      in a timely manner. */
   CINIT!(FTP_RESPONSE_TIMEOUT, LONG, 112)
-  
+
   pub static SERVER_RESPONSE_TIMEOUT: i32 = FTP_RESPONSE_TIMEOUT;
 
   /* Set this option to one of the CURL_IPRESOLVE_* defines (see below) to

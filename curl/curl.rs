@@ -10,10 +10,10 @@ type CURLcode = c_int;
 type CURLINFO = c_int;
 
 /// This is a the curl_slist structure, a list of c strings
-/// 
+///
 /// This is a simple singly-linked list of c_strings
-/// 	that is obviously an unsafe structure which should
-///		be used properly and cautiously
+///     that is obviously an unsafe structure which should
+///     be used properly and cautiously
 pub struct curl_slist {
     data: *c_char,
     next: *curl_slist
@@ -34,7 +34,7 @@ extern {
     pub fn curl_easy_strerror(err: CURLcode) -> *c_char;
     pub fn curl_easy_unescape(curl: *CURL, url: *c_char, inlength: c_int, outlength: *c_int) -> *c_char;
     pub fn curl_free(ptr: *c_char) -> c_void;
-    
+
     pub fn curl_slist_append(list: *curl_slist, s: *c_char) -> *curl_slist;
     pub fn curl_slist_free_all(list: *curl_slist) -> c_void;
 }
@@ -47,21 +47,21 @@ pub struct Curl {
 }
 
 impl Curl {
-	/// Return a new Curl object
-	/// # Example
-	/// ~~~ {.rust}
-	/// let curl = Curl::new();
-	/// ~~~
+    /// Return a new Curl object
+    /// # Example
+    /// ~~~ {.rust}
+    /// let curl = Curl::new();
+    /// ~~~
     pub fn new() -> Curl {
         unsafe {
             Curl {curl: curl_easy_init()}
         }
     }
-    
-    /// URL-escape a string 
+
+    /// URL-escape a string
     /// # Arguments
-    /// * `url` -	String to be escaped
-    /// # Safety Note 
+    /// * `url` -   String to be escaped
+    /// # Safety Note
     /// Not to be used on an entire string
     /// # Example
     /// ~~~ {.rust}
@@ -71,7 +71,7 @@ impl Curl {
     /// ~~~
     pub fn easy_escape(&self, url: &str) -> ~str {
         use std::str::raw::from_c_str;
-        
+
         let len = url.len() as c_int;
         do url.as_c_str |s| {
             unsafe {
@@ -82,11 +82,11 @@ impl Curl {
             }
         }
     }
-    
+
     /// un-URL-escape a string
     /// # Arguments
-    /// * `s` -	String to be unescaped
-    /// # Safety Note 
+    /// * `s` - String to be unescaped
+    /// # Safety Note
     /// Not to be used on an entire string
     /// # Example
     /// ~~~ {.rust}
@@ -96,7 +96,7 @@ impl Curl {
     /// ~~~
     pub fn easy_unescape(&self, s: &str) -> ~str {
         use std::str::raw::from_c_str_len;
-        
+
         do s.as_c_str |c_str| {
             unsafe {
                 let in_len = s.len() as c_int;
@@ -107,8 +107,8 @@ impl Curl {
                 ret
             }
         }
-    }           
-    
+    }
+
     /// Wrapper over the easy_setopt function, which will be called
     /// before calling calling easy_perform.
     /// # Arguments
@@ -116,7 +116,7 @@ impl Curl {
     /// * `val` - value of the option being set
     /// # Safety Note
     /// The opt arguments should be one of the values from curl::opt::*;
-    /// The val argument can be either a pointer to a function, user 
+    /// The val argument can be either a pointer to a function, user
     /// supplied data for a Curl callback, a 32bit int, or a 64bit int.
     /// # Example
     /// ~~~ {.rust}
@@ -141,13 +141,13 @@ impl Curl {
     /// ~~~
     pub fn easy_perform(&self) -> code::Code {
         unsafe {
-            
+
             let raw_code = curl_easy_perform(self.curl);
-            
+
             transmute(raw_code as i64)
         }
     }
-    
+
     /// Wrapper over curl_easy_reset, which clears all previously
     /// set options.
     /// # Example
@@ -160,7 +160,7 @@ impl Curl {
         unsafe {
             curl_easy_reset(self.curl);
         }
-    }         
+    }
 }
 
 /// Converts a curl::code into a it's error string.
@@ -177,7 +177,7 @@ impl Curl {
 /// ~~~
 pub fn easy_strerror(c: code::Code) -> ~str {
     use std::str::raw::from_c_str;
-    
+
     unsafe {
         let c32: i32 = transmute::<code::Code,i64>(c).to_i32();
         let raw = curl_easy_strerror(c32);
@@ -195,26 +195,26 @@ pub fn easy_strerror(c: code::Code) -> ~str {
 /// use std::str::from_bytes;
 ///
 /// let data_res = get("http://api.4chan.org/pol/threads.json");
-///	
+///
 /// match data_res {
-/// 	Ok(data) => { println(from_bytes(data)); }
-/// 	Err(msg) => { fail!("Error" + msg); }
+///     Ok(data) => { println(from_bytes(data)); }
+///     Err(msg) => { fail!("Error" + msg); }
 /// };
 /// ~~~
 pub fn get(url: &str) -> Result<~[u8],~str> {
-	let curl = Curl::new();
-	do url.as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
-	curl.easy_setopt(opt::HEADER,1);
-	curl.easy_setopt(opt::WRITEFUNCTION, write_fn);
-	let data: ~[u8] = ~[];
-	curl.easy_setopt(opt::WRITEDATA, &data);
-	let err = curl.easy_perform();
-	
-	match err {
-		code::CURLE_OK => { Ok(data) }
-		_ => { Err(easy_strerror(err)) }
-	}
-}   
+    let curl = Curl::new();
+    do url.as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
+    curl.easy_setopt(opt::HEADER,1);
+    curl.easy_setopt(opt::WRITEFUNCTION, write_fn);
+    let data: ~[u8] = ~[];
+    curl.easy_setopt(opt::WRITEDATA, &data);
+    let err = curl.easy_perform();
+
+    match err {
+        code::CURLE_OK => { Ok(data) }
+        _ => { Err(easy_strerror(err)) }
+    }
+}
 
 impl Clone for Curl {
     pub fn clone(&self) -> Curl {
@@ -238,7 +238,7 @@ impl Drop for Curl {
 /// * `data` - the data received from this call
 /// * `size` - the size each chunk received
 /// * `nmemb` - the number of chunks
-/// * `user_data` - pointer to user_data set with a 
+/// * `user_data` - pointer to user_data set with a
 /// curl.easy_setopt(opt::WRITEDATA, my_data); call.
 /// # Safety Notes
 /// the size of the data received is (size * nmemb), and in this case
@@ -246,7 +246,7 @@ impl Drop for Curl {
 /// you can write such a function yourself that has different user data
 pub extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::vec::raw::from_buf_raw;
-    
+
     let s: &mut ~[u8] = unsafe { transmute(user_data) };
     let new_data = unsafe { from_buf_raw(data, (size * nmemb) as uint) };
     s.push_all_move(new_data);
@@ -258,7 +258,7 @@ pub extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *
 /// * `data` - the data received from this call
 /// * `size` - the size each chunk received
 /// * `nmemb` - the number of chunks
-/// * `user_data` - pointer to user_data set with a 
+/// * `user_data` - pointer to user_data set with a
 /// curl.easy_setopt(opt::HEADERDATA, my_data); call.
 /// # Safety Notes
 /// the size of the header data received is (size * nmemb), and in this case
@@ -267,7 +267,7 @@ pub extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *
 pub extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::str::raw::from_c_str_len;
     use std::str::*;
-    
+
     let head = unsafe { from_c_str_len(data,(size * nmemb) as uint) };
 
     let colon_res = head.find(':');
@@ -297,7 +297,7 @@ fn test_easy_escape() {
     let query = ~"lol and stuff";
     let escaped_query = c1.easy_escape(query);
     let unescaped_query = c1.easy_unescape(escaped_query);
-    
+
     assert!(escaped_query == ~"lol%20and%20stuff");
     assert!(unescaped_query == query);
 }
@@ -311,7 +311,7 @@ fn test_basic_functionality() {
     let s = ~"";
     curl.easy_setopt(opt::WRITEDATA, &s);
     let err = curl.easy_perform();
-    
+
     assert!(!s.is_empty());
     assert!(err == code::CURLE_OK);
 }
@@ -319,16 +319,16 @@ fn test_basic_functionality() {
 #[test]
 fn test_get_headers() {
     let curl = Curl::new();
-    do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }    
-    
+    do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
+
     curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
     let s = ~"";
     curl.easy_setopt(opt::WRITEDATA, &s);
-    
+
     curl.easy_setopt(opt::HEADERFUNCTION,header_fn);
     let headers: HashMap<~str,~str> = HashMap::new();
     curl.easy_setopt(opt::HEADERDATA,&headers);
-    
+
     let err = curl.easy_perform();
     assert!(!headers.is_empty());
     assert!(!s.is_empty());
@@ -337,10 +337,10 @@ fn test_get_headers() {
 
 #[test]
 fn test_simple_get() {
-	let data_res = get("http://api.4chan.org/pol/threads.json");
-	
-	match data_res {
-		Ok(_) => { ; }
-		Err(msg) => { fail!("Error" + msg); }
-	};
+    let data_res = get("http://api.4chan.org/pol/threads.json");
+
+    match data_res {
+        Ok(_) => { ; }
+        Err(msg) => { fail!("Error" + msg); }
+    };
 }

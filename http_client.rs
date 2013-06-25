@@ -13,24 +13,24 @@ pub struct HttpClient {
 }
 
 impl HttpClient {
-	/// Return a new HttpClient object
-	/// # Example
-	/// ~~~ {.rust}
-	/// let client = HttpClient::new();
-	/// ~~~
+    /// Return a new HttpClient object
+    /// # Example
+    /// ~~~ {.rust}
+    /// let client = HttpClient::new();
+    /// ~~~
     pub fn new() -> HttpClient {
         let cl = HttpClient { curl: Curl::new() };
         cl.curl.easy_setopt(opt::FOLLOWLOCATION,1);
         cl
     }
 
-	/// Execute the given request
-	/// # Arguments
-	/// * `req` -	request to be executed
-	/// # Example
-	/// ~~~ {.rust}
-	/// use headers;
-	///
+    /// Execute the given request
+    /// # Arguments
+    /// * `req` -   request to be executed
+    /// # Example
+    /// ~~~ {.rust}
+    /// use headers;
+    ///
     /// let client = HttpClient::new();
     ///
     /// let url = "http://api.4chan.org/pol/threads.json";
@@ -42,36 +42,36 @@ impl HttpClient {
     /// let resp_res = client.exec(&req);
     ///
     /// match resp_res {
-	/// 	Ok(_) => { ; }
-	/// 	Err(msg) => { fail!("Error" + msg); }
-	/// };
-	/// ~~~
+    ///     Ok(_) => { ; }
+    ///     Err(msg) => { fail!("Error" + msg); }
+    /// };
+    /// ~~~
     pub fn exec(&self, req: &Request) -> Result<Response,~str> {
         let url = req.url.to_str();
         do url.as_c_str |c_str| { self.curl.easy_setopt(opt::URL,c_str); }
-        
+
         self.curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
         let body = ~[];
         self.curl.easy_setopt(opt::WRITEDATA, &body);
-        
+
         self.curl.easy_setopt(opt::HEADERFUNCTION,header_fn);
         let headers: HashMap<~str,~str> = HashMap::new();
         self.curl.easy_setopt(opt::HEADERDATA,&headers);
-        
+
         let err = match req.headers.is_empty() {
             true => { self.curl.easy_perform() }
-            false => { 
+            false => {
                 unsafe {
                     let mut list = 0 as *curl_slist;
-                    
+
                     for req.headers.each |&k, &v| {
                         let h = fmt!("%s: %s",k,v);
-                        
+
                         do h.as_c_str |s| {
                             list = curl_slist_append(list,s);
                         }
                     }
-                    
+
                     self.curl.easy_setopt(opt::HTTPHEADER,list);
                     let rc = self.curl.easy_perform();
                     curl_slist_free_all(list);
@@ -79,20 +79,20 @@ impl HttpClient {
                 }
             }
         };
-        
+
         if err != code::CURLE_OK {
             return Err(easy_strerror(err));
         }
-        
+
         let resp = Response::new(headers,body);
-        
+
         Ok(resp)
     }
 }
 
 extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::vec::raw::from_buf_raw;
-    
+
     let s: &mut ~[u8] = unsafe { transmute(user_data) };
     let new_data = unsafe { from_buf_raw(data, (size * nmemb) as uint) };
     s.push_all_move(new_data);
@@ -104,7 +104,7 @@ extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) 
 extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::str::raw::from_c_str_len;
     use std::str::*;
-    
+
     let head = unsafe { from_c_str_len(data,(size * nmemb) as uint) };
 
     let colon_res = head.find(':');
@@ -122,19 +122,19 @@ extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: 
 #[test]
 fn test_basic_client() {
     use headers;
-    
+
     let client = HttpClient::new();
-    
+
     let url = "http://api.4chan.org/pol/threads.json";
     let mut headers = HashMap::new();
     headers.insert(headers::request::ACCEPT.to_owned(),~"application/json");
-    
+
     let req = Request::new(url.to_owned(),HashMap::new(),~[]);
-    
+
     let resp_res = client.exec(&req);
-    
+
     match resp_res {
-		Ok(_) => { ; }
-		Err(msg) => { fail!("Error" + msg); }
-	};
+        Ok(_) => { ; }
+        Err(msg) => { fail!("Error" + msg); }
+    };
 }
