@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>Module curl::code</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="rust.css" type="text/css" />
+</head>
+<body>
+<div id="header">
+<h1 class="title">Module curl::code</h1>
+</div>
+<div class='index'>
+
+<ul>
+<li><a href="#enum-code">Enum <code>Code</code></a></li>
+<li><a href="#implementation-of-stdcmpeq-for-code">Implementation <code>of ::std::cmp::Eq for Code</code></a> - Automatically derived.</li>
+</ul>
+</div>
+
+<div class="section level2" id="enum-code">
+<h2>Enum <code>Code</code></h2>
+<div class="section level4" id="variants">
+<h4>Variants</h4>
+<ul>
+<li><p><code>CURLE_OK = 0</code></p></li>
+<li><p><code>CURLE_UNSUPPORTED_PROTOCOL</code></p></li>
+<li><p><code>CURLE_FAILED_INIT</code></p></li>
+<li><p><code>CURLE_URL_MALFORMAT</code></p></li>
+<li><p><code>CURLE_NOT_BUILT_IN</code></p></li>
+<li><p><code>CURLE_COULDNT_RESOLVE_PROXY</code></p></li>
+<li><p><code>CURLE_COULDNT_RESOLVE_HOST</code></p></li>
+<li><p><code>CURLE_COULDNT_CONNECT</code></p></li>
+<li><p><code>CURLE_FTP_WEIRD_SERVER_REPLY</code></p></li>
+<li><p><code>CURLE_REMOTE_ACCESS_DENIED</code></p></li>
+<li><p><code>CURLE_FTP_ACCEPT_FAILED</code></p></li>
+<li><p><code>CURLE_FTP_WEIRD_PASS_REPLY</code></p></li>
+<li><p><code>CURLE_FTP_ACCEPT_TIMEOUT</code></p></li>
+<li><p><code>CURLE_FTP_WEIRD_PASV_REPLY</code></p></li>
+<li><p><code>CURLE_FTP_WEIRD_227_FORMAT</code></p></li>
+<li><p><code>CURLE_FTP_CANT_GET_HOST</code></p></li>
+<li><p><code>CURLE_OBSOLETE16</code></p></li>
+<li><p><code>CURLE_FTP_COULDNT_SET_TYPE</code></p></li>
+<li><p><code>CURLE_PARTIAL_FILE</code></p></li>
+<li><p><code>CURLE_FTP_COULDNT_RETR_FILE</code></p></li>
+<li><p><code>CURLE_OBSOLETE20</code></p></li>
+<li><p><code>CURLE_QUOTE_ERROR</code></p></li>
+<li><p><code>CURLE_HTTP_RETURNED_ERROR</code></p></li>
+<li><p><code>CURLE_WRITE_ERROR</code></p></li>
+<li><p><code>CURLE_OBSOLETE24</code></p></li>
+<li><p><code>CURLE_UPLOAD_FAILED</code></p></li>
+<li><p><code>CURLE_READ_ERROR</code></p></li>
+<li><p><code>CURLE_OUT_OF_MEMORY</code></p></li>
+<li><p><code>CURLE_OPERATION_TIMEDOUT</code></p></li>
+<li><p><code>CURLE_OBSOLETE29</code></p></li>
+<li><p><code>CURLE_FTP_PORT_FAILED</code></p></li>
+<li><p><code>CURLE_FTP_COULDNT_USE_REST</code></p></li>
+<li><p><code>CURLE_OBSOLETE32</code></p></li>
+<li><p><code>CURLE_RANGE_ERROR</code></p></li>
+<li><p><code>CURLE_HTTP_POST_ERROR</code></p></li>
+<li><p><code>CURLE_SSL_CONNECT_ERROR</code></p></li>
+<li><p><code>CURLE_BAD_DOWNLOAD_RESUME</code></p></li>
+<li><p><code>CURLE_FILE_COULDNT_READ_FILE</code></p></li>
+<li><p><code>CURLE_LDAP_CANNOT_BIND</code></p></li>
+<li><p><code>CURLE_LDAP_SEARCH_FAILED</code></p></li>
+<li><p><code>CURLE_OBSOLETE40</code></p></li>
+<li><p><code>CURLE_FUNCTION_NOT_FOUND</code></p></li>
+<li><p><code>CURLE_ABORTED_BY_CALLBACK</code></p></li>
+<li><p><code>CURLE_BAD_FUNCTION_ARGUMENT</code></p></li>
+<li><p><code>CURLE_OBSOLETE44</code></p></li>
+<li><p><code>CURLE_INTERFACE_FAILED</code></p></li>
+<li><p><code>CURLE_OBSOLETE46</code></p></li>
+<li><p><code>CURLE_TOO_MANY_REDIRECTS</code></p></li>
+<li><p><code>CURLE_UNKNOWN_OPTION</code></p></li>
+<li><p><code>CURLE_TELNET_OPTION_SYNTAX</code></p></li>
+<li><p><code>CURLE_OBSOLETE50</code></p></li>
+<li><p><code>CURLE_PEER_FAILED_VERIFICATION</code></p></li>
+<li><p><code>CURLE_GOT_NOTHING</code></p></li>
+<li><p><code>CURLE_SSL_ENGINE_NOTFOUND</code></p></li>
+<li><p><code>CURLE_SSL_ENGINE_SETFAILED</code></p></li>
+<li><p><code>CURLE_SEND_ERROR</code></p></li>
+<li><p><code>CURLE_RECV_ERROR</code></p></li>
+<li><p><code>CURLE_OBSOLETE57</code></p></li>
+<li><p><code>CURLE_SSL_CERTPROBLEM</code></p></li>
+<li><p><code>CURLE_SSL_CIPHER</code></p></li>
+<li><p><code>CURLE_SSL_CACERT</code></p></li>
+<li><p><code>CURLE_BAD_CONTENT_ENCODING</code></p></li>
+<li><p><code>CURLE_LDAP_INVALID_URL</code></p></li>
+<li><p><code>CURLE_FILESIZE_EXCEEDED</code></p></li>
+<li><p><code>CURLE_USE_SSL_FAILED</code></p></li>
+<li><p><code>CURLE_SEND_FAIL_REWIND</code></p></li>
+<li><p><code>CURLE_SSL_ENGINE_INITFAILED</code></p></li>
+<li><p><code>CURLE_LOGIN_DENIED</code></p></li>
+<li><p><code>CURLE_TFTP_NOTFOUND</code></p></li>
+<li><p><code>CURLE_TFTP_PERM</code></p></li>
+<li><p><code>CURLE_REMOTE_DISK_FULL</code></p></li>
+<li><p><code>CURLE_TFTP_ILLEGAL</code></p></li>
+<li><p><code>CURLE_TFTP_UNKNOWNID</code></p></li>
+<li><p><code>CURLE_REMOTE_FILE_EXISTS</code></p></li>
+<li><p><code>CURLE_TFTP_NOSUCHUSER</code></p></li>
+<li><p><code>CURLE_CONV_FAILED</code></p></li>
+<li><p><code>CURLE_CONV_REQD</code></p></li>
+<li><p><code>CURLE_SSL_CACERT_BADFILE</code></p></li>
+<li><p><code>CURLE_REMOTE_FILE_NOT_FOUND</code></p></li>
+<li><p><code>CURLE_SSH</code></p></li>
+<li><p><code>CURLE_SSL_SHUTDOWN_FAILED</code></p></li>
+<li><p><code>CURLE_AGAIN</code></p></li>
+<li><p><code>CURLE_SSL_CRL_BADFILE</code></p></li>
+<li><p><code>CURLE_SSL_ISSUER_ERROR</code></p></li>
+<li><p><code>CURLE_FTP_PRET_FAILED</code></p></li>
+<li><p><code>CURLE_RTSP_CSEQ_ERROR</code></p></li>
+<li><p><code>CURLE_RTSP_SESSION_ERROR</code></p></li>
+<li><p><code>CURLE_FTP_BAD_FILE_LIST</code></p></li>
+<li><p><code>CURLE_CHUNK_FAILED</code></p></li>
+<li><p><code>CURLE_NO_CONNECTION_AVAILABLE</code></p></li>
+<li><p><code>CURL_LAST</code></p></li>
+</ul>
+</div>
+</div>
+<div class="section level2" id="implementation-of-stdcmpeq-for-code">
+<h2>Implementation of <code>::std::cmp::Eq</code> for <code>Code</code></h2>
+<p>Automatically derived.</p>
+<div class="section level3" id="method-eq">
+<h3>Method <code>eq</code></h3>
+<pre class="rust"><code>fn eq(&amp;self, __arg_0: &amp;Code) -&gt; ::bool</code></pre>
+</div>
+<div class="section level3" id="method-ne">
+<h3>Method <code>ne</code></h3>
+<pre class="rust"><code>fn ne(&amp;self, __arg_0: &amp;Code) -&gt; ::bool</code></pre>
+</div>
+</div>
+</body>
+</html>

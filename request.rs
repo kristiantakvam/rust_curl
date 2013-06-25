@@ -14,7 +14,7 @@ pub struct Request {
 }
 
 impl Request {
-    
+	/// Create a new Request
     pub fn new(url: ~str, headers: Headers, body: ~[u8]) -> Request {
         Request {url: url, headers: headers, body: body}
     }

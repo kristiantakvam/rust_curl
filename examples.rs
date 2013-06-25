@@ -1,12 +1,9 @@
 use curl;
-use request;
-use response;
-use http_client;
 use std::hashmap::HashMap;
 use std::libc::{size_t,c_char};
 use std::cast::transmute;
 
-// this function is an example of the simplest functionality
+/// this function is an example of the simplest functionality
 pub fn example_get() {
 	use std::str::from_bytes;
 	
@@ -18,7 +15,7 @@ pub fn example_get() {
 	};
 }
 
-// this function is an example of the http_client usage
+/// this function is an example of the http_client usage
 pub fn example_basic_client() {
 	use http_client::HttpClient;
 	use std::hashmap::HashMap;
@@ -39,7 +36,7 @@ pub fn example_basic_client() {
 	};
 }
 
-// a bit more advanced http_client usage
+/// a bit more advanced http_client usage
 pub fn example_client_more() {
 	use http_client::HttpClient;
 	use std::hashmap::HashMap;
@@ -74,8 +71,8 @@ pub fn example_client_more() {
 // You should check the curl_easy* docs located here:
 // http://curl.haxx.se/libcurl/c/libcurl-easy.html
 
-// This function is passed as the WRITEFUNCTION variable
-// in curl::easy_setopt
+/// This function is passed as the WRITEFUNCTION variable
+/// in curl::easy_setopt
 extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::vec::raw::from_buf_raw;
     
@@ -85,8 +82,8 @@ extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) 
     size * nmemb
 }
 
-// This function is passed as the HEADERFUNCTION variable
-// in curl::easy_setopt
+/// This function is passed as the HEADERFUNCTION variable
+/// in curl::easy_setopt
 extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::str::raw::from_c_str_len;
     use std::str::*;
@@ -105,7 +102,7 @@ extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: 
     size * nmemb
 }
 
-// this shows some very basic usage of the curl_easy* interface
+/// this shows some very basic usage of the curl_easy* interface
 pub fn example_basic_functionality() {
 	use curl::Curl;
 	use curl::code;
@@ -127,7 +124,7 @@ pub fn example_basic_functionality() {
 	}
 }
 
-// This shows how you'd get headers with curl
+/// This shows how you'd get headers with curl
 fn example_get_headers() {
 	use curl::Curl;
 	use curl::code;

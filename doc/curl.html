@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>Module curl</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="rust.css" type="text/css" />
+</head>
+<body>
+<div id="header">
+<h1 class="title">Module curl</h1>
+</div>
+<div class='index'>
+
+<ul>
+<li><a href="#struct-curl">Struct <code>Curl</code></a> - This is a an opaque wrapper over the equally opaque CURL pointer.</li>
+<li><a href="#struct-curl_slist">Struct <code>curl_slist</code></a> - This is a the curl_slist structure, a list of c strings</li>
+<li><a href="#implementation-of-stdcmpeq-for-curl">Implementation <code>of ::std::cmp::Eq for Curl</code></a> - Automatically derived.</li>
+<li><a href="#implementation-for-curl">Implementation <code>for Curl</code></a></li>
+<li><a href="#implementation-of-clone-for-curl">Implementation <code>of Clone for Curl</code></a></li>
+<li><a href="#implementation-of-drop-for-curl">Implementation <code>of Drop for Curl</code></a></li>
+<li><a href="#function-easy_strerror">Function <code>easy_strerror</code></a></li>
+<li><a href="#function-get">Function <code>get</code></a></li>
+<li><a href="curl_code.html">Module <code>curl::code</code></a></li>
+<li><a href="curl_opt.html">Module <code>curl::opt</code></a></li>
+</ul>
+</div>
+
+<div class="section level2" id="struct-curl">
+<h2>Struct <code>Curl</code></h2>
+<pre class="rust"><code>pub struct Curl {
+    priv curl: *CURL,
+}</code></pre>
+<p>This is a an opaque wrapper over the equally opaque CURL pointer.</p>
+</div>
+<div class="section level2" id="struct-curl_slist">
+<h2>Struct <code>curl_slist</code></h2>
+<pre class="rust"><code>pub struct curl_slist {
+    data: *c_char,
+    next: *curl_slist,
+}</code></pre>
+<p>This is a the curl_slist structure, a list of c strings</p>
+<p>This is a simple singly-linked list of c_strings that is obviously an unsafe structure which should be used properly and cautiously</p>
+</div>
+<div class="section level2" id="implementation-of-stdcmpeq-for-curl">
+<h2>Implementation of <code>::std::cmp::Eq</code> for <code>Curl</code></h2>
+<p>Automatically derived.</p>
+<div class="section level3" id="method-eq">
+<h3>Method <code>eq</code></h3>
+<pre class="rust"><code>fn eq(&amp;self, __arg_0: &amp;Curl) -&gt; ::bool</code></pre>
+</div>
+<div class="section level3" id="method-ne">
+<h3>Method <code>ne</code></h3>
+<pre class="rust"><code>fn ne(&amp;self, __arg_0: &amp;Curl) -&gt; ::bool</code></pre>
+</div>
+</div>
+<div class="section level2" id="implementation-for-curl">
+<h2>Implementation for <code>Curl</code></h2>
+<div class="section level3" id="method-new">
+<h3>Method <code>new</code></h3>
+<pre class="rust"><code>fn new() -&gt; Curl</code></pre>
+<p>Return a new Curl object</p>
+<div class="section level4" id="example">
+<h4>Example</h4>
+<pre class="rust"><code>let curl = Curl::new();</code></pre>
+</div>
+</div>
+<div class="section level3" id="method-easy_escape">
+<h3>Method <code>easy_escape</code></h3>
+<pre class="rust"><code>fn easy_escape(&amp;self, url: &amp;str) -&gt; ~str</code></pre>
+<p>URL-escape a string</p>
+<div class="section level4" id="arguments">
+<h4>Arguments</h4>
+<ul>
+<li>url - String to be escaped</li>
+</ul>
+</div>
+<div class="section level4" id="safety-note">
+<h4>Safety Note</h4>
+<p>Not to be used on an entire string</p>
+</div>
+<div class="section level4" id="example-1">
+<h4>Example</h4>
+<pre class="rust"><code>let curl = Curl::new();
+let query = ~&quot;lol and stuff&quot;;
+let escaped = curl.easy_escape(query);</code></pre>
+</div>
+</div>
+<div class="section level3" id="method-easy_unescape">
+<h3>Method <code>easy_unescape</code></h3>
+<pre class="rust"><code>fn easy_unescape(&amp;self, s: &amp;str) -&gt; ~str</code></pre>
+<p>un-URL-escape a string</p>
+<div class="section level4" id="arguments-1">
+<h4>Arguments</h4>
+<ul>
+<li>s - String to be unescaped</li>
+</ul>
+</div>
+<div class="section level4" id="safety-note-1">
+<h4>Safety Note</h4>
+<p>Not to be used on an entire string</p>
+</div>
+<div class="section level4" id="example-2">
+<h4>Example</h4>
+<pre class="rust"><code>let curl = Curl::new();
+let escaped = ~&quot;lol%20and%20stuff&quot;;
+let unescaped = curl.easy_unescape(escaped);</code></pre>
+</div>
+</div>
+<div class="section level3" id="method-easy_setopt">
+<h3>Method <code>easy_setopt</code></h3>
+<pre class="rust"><code>fn easy_setopt&lt;T&gt;(&amp;self, opt: i32, val: T) -&gt; code::Code</code></pre>
+<p>Wrapper over the easy_setopt function, which will be called before calling calling easy_perform.</p>
+<div class="section level4" id="arguments-2">
+<h4>Arguments</h4>
+<ul>
+<li>opt - option to be set</li>
+<li>val - value of the option being set</li>
+</ul>
+</div>
+<div class="section level4" id="safety-note-2">
+<h4>Safety Note</h4>
+<p>The opt arguments should be one of the values from curl::opt::*; The val argument can be either a pointer to a function, user supplied data for a Curl callback, a 32bit int, or a 64bit int.</p>
+</div>
+<div class="section level4" id="example-3">
+<h4>Example</h4>
+<pre class="rust"><code>let curl = Curl::new();
+curl.easy_setopt(opt::HEADER,1);</code></pre>
+</div>
+</div>
+<div class="section level3" id="method-easy_perform">
+<h3>Method <code>easy_perform</code></h3>
+<pre class="rust"><code>fn easy_perform(&amp;self) -&gt; code::Code</code></pre>
+<p>Wrapper over curl_easy_perform (performs the request).</p>
+<div class="section level4" id="example-4">
+<h4>Example</h4>
+<pre class="rust"><code>let curl = Curl::new();
+curl.easy_setopt(opt::HEADER,1);
+curl.easy_perform();</code></pre>
+</div>
+</div>
+<div class="section level3" id="method-easy_reset">
+<h3>Method <code>easy_reset</code></h3>
+<pre class="rust"><code>fn easy_reset(&amp;self)</code></pre>
+<p>Wrapper over curl_easy_reset, which clears all previously set options.</p>
+<div class="section level4" id="example-5">
+<h4>Example</h4>
+<pre class="rust"><code>let curl = Curl::new();
+curl.easy_setopt(opt::HEADER,1);
+curl.easy_rest();</code></pre>
+</div>
+</div>
+</div>
+<div class="section level2" id="implementation-of-clone-for-curl">
+<h2>Implementation of <code>Clone</code> for <code>Curl</code></h2>
+<div class="section level3" id="method-clone">
+<h3>Method <code>clone</code></h3>
+<pre class="rust"><code>fn clone(&amp;self) -&gt; Curl</code></pre>
+</div>
+</div>
+<div class="section level2" id="implementation-of-drop-for-curl">
+<h2>Implementation of <code>Drop</code> for <code>Curl</code></h2>
+<div class="section level3" id="method-finalize">
+<h3>Method <code>finalize</code></h3>
+<pre class="rust"><code>fn finalize(&amp;self)</code></pre>
+</div>
+</div>
+<div class="section level2" id="function-easy_strerror">
+<h2>Function <code>easy_strerror</code></h2>
+<pre class="rust"><code>fn easy_strerror(c: code::Code) -&gt; ~str</code></pre>
+</div>
+<div class="section level2" id="function-get">
+<h2>Function <code>get</code></h2>
+<pre class="rust"><code>fn get(url: &amp;str) -&gt; Result&lt;~[u8], ~str&gt;</code></pre>
+</div>
+</body>
+</html>

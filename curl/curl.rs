@@ -9,6 +9,11 @@ type CURL = ();
 type CURLcode = c_int;
 type CURLINFO = c_int;
 
+/// This is a the curl_slist structure, a list of c strings
+/// 
+/// This is a simple singly-linked list of c_strings
+/// 	that is obviously an unsafe structure which should
+///		be used properly and cautiously
 pub struct curl_slist {
     data: *c_char,
     next: *curl_slist
@@ -34,24 +39,36 @@ extern {
     pub fn curl_slist_free_all(list: *curl_slist) -> c_void;
 }
 
-macro_rules! dbg(
-    () => (
-        println("Ok so far");
-    )
-)
-
+/// This is a an opaque wrapper over the equally opaque
+/// CURL pointer.
 #[deriving(Eq)]
 pub struct Curl {
     priv curl: *CURL
 }
 
 impl Curl {
+	/// Return a new Curl object
+	/// # Example
+	/// ~~~ {.rust}
+	/// let curl = Curl::new();
+	/// ~~~
     pub fn new() -> Curl {
         unsafe {
             Curl {curl: curl_easy_init()}
         }
     }
     
+    /// URL-escape a string 
+    /// # Arguments
+    /// * url -	String to be escaped
+    /// # Safety Note 
+    /// Not to be used on an entire string
+    /// # Example
+    /// ~~~ {.rust}
+    /// let curl = Curl::new();
+    /// let query = ~"lol and stuff";
+    /// let escaped = curl.easy_escape(query);
+    /// ~~~
     pub fn easy_escape(&self, url: &str) -> ~str {
         use std::str::raw::from_c_str;
         
@@ -66,6 +83,17 @@ impl Curl {
         }
     }
     
+    /// un-URL-escape a string
+    /// # Arguments
+    /// * s -	String to be unescaped
+    /// # Safety Note 
+    /// Not to be used on an entire string
+    /// # Example
+    /// ~~~ {.rust}
+    /// let curl = Curl::new();
+    /// let escaped = ~"lol%20and%20stuff";
+    /// let unescaped = curl.easy_unescape(escaped);
+    /// ~~~
     pub fn easy_unescape(&self, s: &str) -> ~str {
         use std::str::raw::from_c_str_len;
         
@@ -81,6 +109,20 @@ impl Curl {
         }
     }           
     
+    /// Wrapper over the easy_setopt function, which will be called
+    /// before calling calling easy_perform.
+    /// # Arguments
+    /// * opt - option to be set
+    /// * val - value of the option being set
+    /// # Safety Note
+    /// The opt arguments should be one of the values from curl::opt::*;
+    /// The val argument can be either a pointer to a function, user 
+    /// supplied data for a Curl callback, a 32bit int, or a 64bit int.
+    /// # Example
+    /// ~~~ {.rust}
+    /// let curl = Curl::new();
+    /// curl.easy_setopt(opt::HEADER,1);
+    /// ~~~
     pub fn easy_setopt<T>(&self, opt: i32, val: T) -> code::Code {
         unsafe {
             let opt_val = transmute(val);
@@ -88,7 +130,14 @@ impl Curl {
             transmute(raw_code as i64)
         }
     }
-    
+    /// Wrapper over curl_easy_perform (performs the request).
+    /// # Example
+    /// ~~~ {.rust}
+    /// let curl = Curl::new();
+    /// do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
+    /// curl.easy_setopt(opt::HEADER,1);
+    /// curl.easy_perform();
+    /// ~~~
     pub fn easy_perform(&self) -> code::Code {
         unsafe {
             
@@ -98,6 +147,14 @@ impl Curl {
         }
     }
     
+    /// Wrapper over curl_easy_reset, which clears all previously
+    /// set options.
+    /// # Example
+    /// ~~~ {.rust}
+    /// let curl = Curl::new();
+    /// curl.easy_setopt(opt::HEADER,1);
+    /// curl.easy_reset();
+    /// ~~~
     pub fn easy_reset(&self) {
         unsafe {
             curl_easy_reset(self.curl);
@@ -105,6 +162,16 @@ impl Curl {
     }         
 }
 
+/// Converts a curl::code into a it's error string.
+/// # Arguments
+/// * c - code to get error string from
+/// # Example
+/// ~~~ {.rust}
+/// let curl = Curl::new();
+/// do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
+/// let err = curl.easy_perform();
+/// let err_str = easy_strerror(err);
+/// ~~~
 pub fn easy_strerror(c: code::Code) -> ~str {
     use std::str::raw::from_c_str;
     

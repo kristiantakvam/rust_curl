@@ -1,0 +1,1042 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>Module curl::opt</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="rust.css" type="text/css" />
+</head>
+<body>
+<div id="header">
+<h1 class="title">Module curl::opt</h1>
+</div>
+<div class='index'>
+
+<ul>
+<li><a href="#const-accepttimeout_ms">Const <code>ACCEPTTIMEOUT_MS</code></a></li>
+<li><a href="#const-accept_encoding">Const <code>ACCEPT_ENCODING</code></a></li>
+<li><a href="#const-address_scope">Const <code>ADDRESS_SCOPE</code></a></li>
+<li><a href="#const-append">Const <code>APPEND</code></a></li>
+<li><a href="#const-autoreferer">Const <code>AUTOREFERER</code></a></li>
+<li><a href="#const-buffersize">Const <code>BUFFERSIZE</code></a></li>
+<li><a href="#const-cainfo">Const <code>CAINFO</code></a></li>
+<li><a href="#const-capath">Const <code>CAPATH</code></a></li>
+<li><a href="#const-certinfo">Const <code>CERTINFO</code></a></li>
+<li><a href="#const-chunk_bgn_function">Const <code>CHUNK_BGN_FUNCTION</code></a></li>
+<li><a href="#const-chunk_data">Const <code>CHUNK_DATA</code></a></li>
+<li><a href="#const-chunk_end_function">Const <code>CHUNK_END_FUNCTION</code></a></li>
+<li><a href="#const-closepolicy">Const <code>CLOSEPOLICY</code></a></li>
+<li><a href="#const-closesocketdata">Const <code>CLOSESOCKETDATA</code></a></li>
+<li><a href="#const-closesocketfunction">Const <code>CLOSESOCKETFUNCTION</code></a></li>
+<li><a href="#const-connecttimeout">Const <code>CONNECTTIMEOUT</code></a></li>
+<li><a href="#const-connecttimeout_ms">Const <code>CONNECTTIMEOUT_MS</code></a></li>
+<li><a href="#const-connect_only">Const <code>CONNECT_ONLY</code></a></li>
+<li><a href="#const-conv_from_network_function">Const <code>CONV_FROM_NETWORK_FUNCTION</code></a></li>
+<li><a href="#const-conv_from_utf8_function">Const <code>CONV_FROM_UTF8_FUNCTION</code></a></li>
+<li><a href="#const-conv_to_network_function">Const <code>CONV_TO_NETWORK_FUNCTION</code></a></li>
+<li><a href="#const-cookie">Const <code>COOKIE</code></a></li>
+<li><a href="#const-cookiefile">Const <code>COOKIEFILE</code></a></li>
+<li><a href="#const-cookiejar">Const <code>COOKIEJAR</code></a></li>
+<li><a href="#const-cookielist">Const <code>COOKIELIST</code></a></li>
+<li><a href="#const-cookiesession">Const <code>COOKIESESSION</code></a></li>
+<li><a href="#const-copypostfields">Const <code>COPYPOSTFIELDS</code></a></li>
+<li><a href="#const-crlf">Const <code>CRLF</code></a></li>
+<li><a href="#const-crlfile">Const <code>CRLFILE</code></a></li>
+<li><a href="#const-curlopt_lastentry">Const <code>CURLOPT_LASTENTRY</code></a></li>
+<li><a href="#const-customrequest">Const <code>CUSTOMREQUEST</code></a></li>
+<li><a href="#const-debugdata">Const <code>DEBUGDATA</code></a></li>
+<li><a href="#const-debugfunction">Const <code>DEBUGFUNCTION</code></a></li>
+<li><a href="#const-dirlistonly">Const <code>DIRLISTONLY</code></a></li>
+<li><a href="#const-dns_cache_timeout">Const <code>DNS_CACHE_TIMEOUT</code></a></li>
+<li><a href="#const-dns_servers">Const <code>DNS_SERVERS</code></a></li>
+<li><a href="#const-dns_use_global_cache">Const <code>DNS_USE_GLOBAL_CACHE</code></a></li>
+<li><a href="#const-egdsocket">Const <code>EGDSOCKET</code></a></li>
+<li><a href="#const-errorbuffer">Const <code>ERRORBUFFER</code></a></li>
+<li><a href="#const-failonerror">Const <code>FAILONERROR</code></a></li>
+<li><a href="#const-file">Const <code>FILE</code></a></li>
+<li><a href="#const-filetime">Const <code>FILETIME</code></a></li>
+<li><a href="#const-fnmatch_data">Const <code>FNMATCH_DATA</code></a></li>
+<li><a href="#const-fnmatch_function">Const <code>FNMATCH_FUNCTION</code></a></li>
+<li><a href="#const-followlocation">Const <code>FOLLOWLOCATION</code></a></li>
+<li><a href="#const-forbid_reuse">Const <code>FORBID_REUSE</code></a></li>
+<li><a href="#const-fresh_connect">Const <code>FRESH_CONNECT</code></a></li>
+<li><a href="#const-ftpport">Const <code>FTPPORT</code></a></li>
+<li><a href="#const-ftpsslauth">Const <code>FTPSSLAUTH</code></a></li>
+<li><a href="#const-ftp_account">Const <code>FTP_ACCOUNT</code></a></li>
+<li><a href="#const-ftp_alternative_to_user">Const <code>FTP_ALTERNATIVE_TO_USER</code></a></li>
+<li><a href="#const-ftp_create_missing_dirs">Const <code>FTP_CREATE_MISSING_DIRS</code></a></li>
+<li><a href="#const-ftp_filemethod">Const <code>FTP_FILEMETHOD</code></a></li>
+<li><a href="#const-ftp_response_timeout">Const <code>FTP_RESPONSE_TIMEOUT</code></a></li>
+<li><a href="#const-ftp_skip_pasv_ip">Const <code>FTP_SKIP_PASV_IP</code></a></li>
+<li><a href="#const-ftp_ssl_ccc">Const <code>FTP_SSL_CCC</code></a></li>
+<li><a href="#const-ftp_use_eprt">Const <code>FTP_USE_EPRT</code></a></li>
+<li><a href="#const-ftp_use_epsv">Const <code>FTP_USE_EPSV</code></a></li>
+<li><a href="#const-ftp_use_pret">Const <code>FTP_USE_PRET</code></a></li>
+<li><a href="#const-gssapi_delegation">Const <code>GSSAPI_DELEGATION</code></a></li>
+<li><a href="#const-header">Const <code>HEADER</code></a></li>
+<li><a href="#const-headerdata">Const <code>HEADERDATA</code></a></li>
+<li><a href="#const-headerfunction">Const <code>HEADERFUNCTION</code></a></li>
+<li><a href="#const-http200aliases">Const <code>HTTP200ALIASES</code></a></li>
+<li><a href="#const-httpauth">Const <code>HTTPAUTH</code></a></li>
+<li><a href="#const-httpget">Const <code>HTTPGET</code></a></li>
+<li><a href="#const-httpheader">Const <code>HTTPHEADER</code></a></li>
+<li><a href="#const-httppost">Const <code>HTTPPOST</code></a></li>
+<li><a href="#const-httpproxytunnel">Const <code>HTTPPROXYTUNNEL</code></a></li>
+<li><a href="#const-http_content_decoding">Const <code>HTTP_CONTENT_DECODING</code></a></li>
+<li><a href="#const-http_transfer_decoding">Const <code>HTTP_TRANSFER_DECODING</code></a></li>
+<li><a href="#const-http_version">Const <code>HTTP_VERSION</code></a></li>
+<li><a href="#const-ignore_content_length">Const <code>IGNORE_CONTENT_LENGTH</code></a></li>
+<li><a href="#const-infile">Const <code>INFILE</code></a></li>
+<li><a href="#const-infilesize">Const <code>INFILESIZE</code></a></li>
+<li><a href="#const-infilesize_large">Const <code>INFILESIZE_LARGE</code></a></li>
+<li><a href="#const-interface">Const <code>INTERFACE</code></a></li>
+<li><a href="#const-interleavedata">Const <code>INTERLEAVEDATA</code></a></li>
+<li><a href="#const-interleavefunction">Const <code>INTERLEAVEFUNCTION</code></a></li>
+<li><a href="#const-ioctldata">Const <code>IOCTLDATA</code></a></li>
+<li><a href="#const-ioctlfunction">Const <code>IOCTLFUNCTION</code></a></li>
+<li><a href="#const-ipresolve">Const <code>IPRESOLVE</code></a></li>
+<li><a href="#const-issuercert">Const <code>ISSUERCERT</code></a></li>
+<li><a href="#const-keypasswd">Const <code>KEYPASSWD</code></a></li>
+<li><a href="#const-krblevel">Const <code>KRBLEVEL</code></a></li>
+<li><a href="#const-localport">Const <code>LOCALPORT</code></a></li>
+<li><a href="#const-localportrange">Const <code>LOCALPORTRANGE</code></a></li>
+<li><a href="#const-low_speed_limit">Const <code>LOW_SPEED_LIMIT</code></a></li>
+<li><a href="#const-low_speed_time">Const <code>LOW_SPEED_TIME</code></a></li>
+<li><a href="#const-mail_auth">Const <code>MAIL_AUTH</code></a></li>
+<li><a href="#const-mail_from">Const <code>MAIL_FROM</code></a></li>
+<li><a href="#const-mail_rcpt">Const <code>MAIL_RCPT</code></a></li>
+<li><a href="#const-maxconnects">Const <code>MAXCONNECTS</code></a></li>
+<li><a href="#const-maxfilesize">Const <code>MAXFILESIZE</code></a></li>
+<li><a href="#const-maxfilesize_large">Const <code>MAXFILESIZE_LARGE</code></a></li>
+<li><a href="#const-maxredirs">Const <code>MAXREDIRS</code></a></li>
+<li><a href="#const-max_recv_speed_large">Const <code>MAX_RECV_SPEED_LARGE</code></a></li>
+<li><a href="#const-max_send_speed_large">Const <code>MAX_SEND_SPEED_LARGE</code></a></li>
+<li><a href="#const-netrc">Const <code>NETRC</code></a></li>
+<li><a href="#const-netrc_file">Const <code>NETRC_FILE</code></a></li>
+<li><a href="#const-new_directory_perms">Const <code>NEW_DIRECTORY_PERMS</code></a></li>
+<li><a href="#const-new_file_perms">Const <code>NEW_FILE_PERMS</code></a></li>
+<li><a href="#const-nobody">Const <code>NOBODY</code></a></li>
+<li><a href="#const-noprogress">Const <code>NOPROGRESS</code></a></li>
+<li><a href="#const-noproxy">Const <code>NOPROXY</code></a></li>
+<li><a href="#const-nosignal">Const <code>NOSIGNAL</code></a></li>
+<li><a href="#const-opensocketdata">Const <code>OPENSOCKETDATA</code></a></li>
+<li><a href="#const-opensocketfunction">Const <code>OPENSOCKETFUNCTION</code></a></li>
+<li><a href="#const-password">Const <code>PASSWORD</code></a></li>
+<li><a href="#const-port">Const <code>PORT</code></a></li>
+<li><a href="#const-post">Const <code>POST</code></a></li>
+<li><a href="#const-postfields">Const <code>POSTFIELDS</code></a></li>
+<li><a href="#const-postfieldsize">Const <code>POSTFIELDSIZE</code></a></li>
+<li><a href="#const-postfieldsize_large">Const <code>POSTFIELDSIZE_LARGE</code></a></li>
+<li><a href="#const-postquote">Const <code>POSTQUOTE</code></a></li>
+<li><a href="#const-postredir">Const <code>POSTREDIR</code></a></li>
+<li><a href="#const-prequote">Const <code>PREQUOTE</code></a></li>
+<li><a href="#const-private">Const <code>PRIVATE</code></a></li>
+<li><a href="#const-progressdata">Const <code>PROGRESSDATA</code></a></li>
+<li><a href="#const-progressfunction">Const <code>PROGRESSFUNCTION</code></a></li>
+<li><a href="#const-protocols">Const <code>PROTOCOLS</code></a></li>
+<li><a href="#const-proxy">Const <code>PROXY</code></a></li>
+<li><a href="#const-proxyauth">Const <code>PROXYAUTH</code></a></li>
+<li><a href="#const-proxypassword">Const <code>PROXYPASSWORD</code></a></li>
+<li><a href="#const-proxyport">Const <code>PROXYPORT</code></a></li>
+<li><a href="#const-proxytype">Const <code>PROXYTYPE</code></a></li>
+<li><a href="#const-proxyusername">Const <code>PROXYUSERNAME</code></a></li>
+<li><a href="#const-proxyuserpwd">Const <code>PROXYUSERPWD</code></a></li>
+<li><a href="#const-proxy_transfer_mode">Const <code>PROXY_TRANSFER_MODE</code></a></li>
+<li><a href="#const-put">Const <code>PUT</code></a></li>
+<li><a href="#const-quote">Const <code>QUOTE</code></a></li>
+<li><a href="#const-random_file">Const <code>RANDOM_FILE</code></a></li>
+<li><a href="#const-range">Const <code>RANGE</code></a></li>
+<li><a href="#const-readfunction">Const <code>READFUNCTION</code></a></li>
+<li><a href="#const-redir_protocols">Const <code>REDIR_PROTOCOLS</code></a></li>
+<li><a href="#const-referer">Const <code>REFERER</code></a></li>
+<li><a href="#const-resolve">Const <code>RESOLVE</code></a></li>
+<li><a href="#const-resume_from">Const <code>RESUME_FROM</code></a></li>
+<li><a href="#const-resume_from_large">Const <code>RESUME_FROM_LARGE</code></a></li>
+<li><a href="#const-rtsp_client_cseq">Const <code>RTSP_CLIENT_CSEQ</code></a></li>
+<li><a href="#const-rtsp_request">Const <code>RTSP_REQUEST</code></a></li>
+<li><a href="#const-rtsp_server_cseq">Const <code>RTSP_SERVER_CSEQ</code></a></li>
+<li><a href="#const-rtsp_session_id">Const <code>RTSP_SESSION_ID</code></a></li>
+<li><a href="#const-rtsp_stream_uri">Const <code>RTSP_STREAM_URI</code></a></li>
+<li><a href="#const-rtsp_transport">Const <code>RTSP_TRANSPORT</code></a></li>
+<li><a href="#const-sasl_ir">Const <code>SASL_IR</code></a></li>
+<li><a href="#const-seekdata">Const <code>SEEKDATA</code></a></li>
+<li><a href="#const-seekfunction">Const <code>SEEKFUNCTION</code></a></li>
+<li><a href="#const-server_response_timeout">Const <code>SERVER_RESPONSE_TIMEOUT</code></a></li>
+<li><a href="#const-share">Const <code>SHARE</code></a></li>
+<li><a href="#const-sockoptdata">Const <code>SOCKOPTDATA</code></a></li>
+<li><a href="#const-sockoptfunction">Const <code>SOCKOPTFUNCTION</code></a></li>
+<li><a href="#const-socks5_gssapi_nec">Const <code>SOCKS5_GSSAPI_NEC</code></a></li>
+<li><a href="#const-socks5_gssapi_service">Const <code>SOCKS5_GSSAPI_SERVICE</code></a></li>
+<li><a href="#const-ssh_auth_types">Const <code>SSH_AUTH_TYPES</code></a></li>
+<li><a href="#const-ssh_host_public_key_md5">Const <code>SSH_HOST_PUBLIC_KEY_MD5</code></a></li>
+<li><a href="#const-ssh_keydata">Const <code>SSH_KEYDATA</code></a></li>
+<li><a href="#const-ssh_keyfunction">Const <code>SSH_KEYFUNCTION</code></a></li>
+<li><a href="#const-ssh_knownhosts">Const <code>SSH_KNOWNHOSTS</code></a></li>
+<li><a href="#const-ssh_private_keyfile">Const <code>SSH_PRIVATE_KEYFILE</code></a></li>
+<li><a href="#const-ssh_public_keyfile">Const <code>SSH_PUBLIC_KEYFILE</code></a></li>
+<li><a href="#const-sslcert">Const <code>SSLCERT</code></a></li>
+<li><a href="#const-sslcerttype">Const <code>SSLCERTTYPE</code></a></li>
+<li><a href="#const-sslengine">Const <code>SSLENGINE</code></a></li>
+<li><a href="#const-sslengine_default">Const <code>SSLENGINE_DEFAULT</code></a></li>
+<li><a href="#const-sslkey">Const <code>SSLKEY</code></a></li>
+<li><a href="#const-sslkeytype">Const <code>SSLKEYTYPE</code></a></li>
+<li><a href="#const-sslversion">Const <code>SSLVERSION</code></a></li>
+<li><a href="#const-ssl_cipher_list">Const <code>SSL_CIPHER_LIST</code></a></li>
+<li><a href="#const-ssl_ctx_data">Const <code>SSL_CTX_DATA</code></a></li>
+<li><a href="#const-ssl_ctx_function">Const <code>SSL_CTX_FUNCTION</code></a></li>
+<li><a href="#const-ssl_options">Const <code>SSL_OPTIONS</code></a></li>
+<li><a href="#const-ssl_sessionid_cache">Const <code>SSL_SESSIONID_CACHE</code></a></li>
+<li><a href="#const-ssl_verifyhost">Const <code>SSL_VERIFYHOST</code></a></li>
+<li><a href="#const-ssl_verifypeer">Const <code>SSL_VERIFYPEER</code></a></li>
+<li><a href="#const-stderr">Const <code>STDERR</code></a></li>
+<li><a href="#const-tcp_keepalive">Const <code>TCP_KEEPALIVE</code></a></li>
+<li><a href="#const-tcp_keepidle">Const <code>TCP_KEEPIDLE</code></a></li>
+<li><a href="#const-tcp_keepintvl">Const <code>TCP_KEEPINTVL</code></a></li>
+<li><a href="#const-tcp_nodelay">Const <code>TCP_NODELAY</code></a></li>
+<li><a href="#const-telnetoptions">Const <code>TELNETOPTIONS</code></a></li>
+<li><a href="#const-tftp_blksize">Const <code>TFTP_BLKSIZE</code></a></li>
+<li><a href="#const-timecondition">Const <code>TIMECONDITION</code></a></li>
+<li><a href="#const-timeout">Const <code>TIMEOUT</code></a></li>
+<li><a href="#const-timeout_ms">Const <code>TIMEOUT_MS</code></a></li>
+<li><a href="#const-timevalue">Const <code>TIMEVALUE</code></a></li>
+<li><a href="#const-tlsauth_password">Const <code>TLSAUTH_PASSWORD</code></a></li>
+<li><a href="#const-tlsauth_type">Const <code>TLSAUTH_TYPE</code></a></li>
+<li><a href="#const-tlsauth_username">Const <code>TLSAUTH_USERNAME</code></a></li>
+<li><a href="#const-transfertext">Const <code>TRANSFERTEXT</code></a></li>
+<li><a href="#const-transfer_encoding">Const <code>TRANSFER_ENCODING</code></a></li>
+<li><a href="#const-unrestricted_auth">Const <code>UNRESTRICTED_AUTH</code></a></li>
+<li><a href="#const-upload">Const <code>UPLOAD</code></a></li>
+<li><a href="#const-url">Const <code>URL</code></a></li>
+<li><a href="#const-useragent">Const <code>USERAGENT</code></a></li>
+<li><a href="#const-username">Const <code>USERNAME</code></a></li>
+<li><a href="#const-userpwd">Const <code>USERPWD</code></a></li>
+<li><a href="#const-use_ssl">Const <code>USE_SSL</code></a></li>
+<li><a href="#const-verbose">Const <code>VERBOSE</code></a></li>
+<li><a href="#const-wildcardmatch">Const <code>WILDCARDMATCH</code></a></li>
+<li><a href="#const-writedata">Const <code>WRITEDATA</code></a></li>
+<li><a href="#const-writefunction">Const <code>WRITEFUNCTION</code></a></li>
+<li><a href="#const-writeheader">Const <code>WRITEHEADER</code></a></li>
+<li><a href="#const-writeinfo">Const <code>WRITEINFO</code></a></li>
+</ul>
+</div>
+
+<div class="section level2" id="const-accepttimeout_ms">
+<h2>Const <code>ACCEPTTIMEOUT_MS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-accept_encoding">
+<h2>Const <code>ACCEPT_ENCODING</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-address_scope">
+<h2>Const <code>ADDRESS_SCOPE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-append">
+<h2>Const <code>APPEND</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-autoreferer">
+<h2>Const <code>AUTOREFERER</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-buffersize">
+<h2>Const <code>BUFFERSIZE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-cainfo">
+<h2>Const <code>CAINFO</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-capath">
+<h2>Const <code>CAPATH</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-certinfo">
+<h2>Const <code>CERTINFO</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-chunk_bgn_function">
+<h2>Const <code>CHUNK_BGN_FUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-chunk_data">
+<h2>Const <code>CHUNK_DATA</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-chunk_end_function">
+<h2>Const <code>CHUNK_END_FUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-closepolicy">
+<h2>Const <code>CLOSEPOLICY</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-closesocketdata">
+<h2>Const <code>CLOSESOCKETDATA</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-closesocketfunction">
+<h2>Const <code>CLOSESOCKETFUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-connecttimeout">
+<h2>Const <code>CONNECTTIMEOUT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-connecttimeout_ms">
+<h2>Const <code>CONNECTTIMEOUT_MS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-connect_only">
+<h2>Const <code>CONNECT_ONLY</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-conv_from_network_function">
+<h2>Const <code>CONV_FROM_NETWORK_FUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-conv_from_utf8_function">
+<h2>Const <code>CONV_FROM_UTF8_FUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-conv_to_network_function">
+<h2>Const <code>CONV_TO_NETWORK_FUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-cookie">
+<h2>Const <code>COOKIE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-cookiefile">
+<h2>Const <code>COOKIEFILE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-cookiejar">
+<h2>Const <code>COOKIEJAR</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-cookielist">
+<h2>Const <code>COOKIELIST</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-cookiesession">
+<h2>Const <code>COOKIESESSION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-copypostfields">
+<h2>Const <code>COPYPOSTFIELDS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-crlf">
+<h2>Const <code>CRLF</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-crlfile">
+<h2>Const <code>CRLFILE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-curlopt_lastentry">
+<h2>Const <code>CURLOPT_LASTENTRY</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-customrequest">
+<h2>Const <code>CUSTOMREQUEST</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-debugdata">
+<h2>Const <code>DEBUGDATA</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-debugfunction">
+<h2>Const <code>DEBUGFUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-dirlistonly">
+<h2>Const <code>DIRLISTONLY</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-dns_cache_timeout">
+<h2>Const <code>DNS_CACHE_TIMEOUT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-dns_servers">
+<h2>Const <code>DNS_SERVERS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-dns_use_global_cache">
+<h2>Const <code>DNS_USE_GLOBAL_CACHE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-egdsocket">
+<h2>Const <code>EGDSOCKET</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-errorbuffer">
+<h2>Const <code>ERRORBUFFER</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-failonerror">
+<h2>Const <code>FAILONERROR</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-file">
+<h2>Const <code>FILE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-filetime">
+<h2>Const <code>FILETIME</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-fnmatch_data">
+<h2>Const <code>FNMATCH_DATA</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-fnmatch_function">
+<h2>Const <code>FNMATCH_FUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-followlocation">
+<h2>Const <code>FOLLOWLOCATION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-forbid_reuse">
+<h2>Const <code>FORBID_REUSE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-fresh_connect">
+<h2>Const <code>FRESH_CONNECT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ftpport">
+<h2>Const <code>FTPPORT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ftpsslauth">
+<h2>Const <code>FTPSSLAUTH</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ftp_account">
+<h2>Const <code>FTP_ACCOUNT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ftp_alternative_to_user">
+<h2>Const <code>FTP_ALTERNATIVE_TO_USER</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ftp_create_missing_dirs">
+<h2>Const <code>FTP_CREATE_MISSING_DIRS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ftp_filemethod">
+<h2>Const <code>FTP_FILEMETHOD</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ftp_response_timeout">
+<h2>Const <code>FTP_RESPONSE_TIMEOUT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ftp_skip_pasv_ip">
+<h2>Const <code>FTP_SKIP_PASV_IP</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ftp_ssl_ccc">
+<h2>Const <code>FTP_SSL_CCC</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ftp_use_eprt">
+<h2>Const <code>FTP_USE_EPRT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ftp_use_epsv">
+<h2>Const <code>FTP_USE_EPSV</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ftp_use_pret">
+<h2>Const <code>FTP_USE_PRET</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-gssapi_delegation">
+<h2>Const <code>GSSAPI_DELEGATION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-header">
+<h2>Const <code>HEADER</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-headerdata">
+<h2>Const <code>HEADERDATA</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-headerfunction">
+<h2>Const <code>HEADERFUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-http200aliases">
+<h2>Const <code>HTTP200ALIASES</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-httpauth">
+<h2>Const <code>HTTPAUTH</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-httpget">
+<h2>Const <code>HTTPGET</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-httpheader">
+<h2>Const <code>HTTPHEADER</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-httppost">
+<h2>Const <code>HTTPPOST</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-httpproxytunnel">
+<h2>Const <code>HTTPPROXYTUNNEL</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-http_content_decoding">
+<h2>Const <code>HTTP_CONTENT_DECODING</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-http_transfer_decoding">
+<h2>Const <code>HTTP_TRANSFER_DECODING</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-http_version">
+<h2>Const <code>HTTP_VERSION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ignore_content_length">
+<h2>Const <code>IGNORE_CONTENT_LENGTH</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-infile">
+<h2>Const <code>INFILE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-infilesize">
+<h2>Const <code>INFILESIZE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-infilesize_large">
+<h2>Const <code>INFILESIZE_LARGE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-interface">
+<h2>Const <code>INTERFACE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-interleavedata">
+<h2>Const <code>INTERLEAVEDATA</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-interleavefunction">
+<h2>Const <code>INTERLEAVEFUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ioctldata">
+<h2>Const <code>IOCTLDATA</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ioctlfunction">
+<h2>Const <code>IOCTLFUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ipresolve">
+<h2>Const <code>IPRESOLVE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-issuercert">
+<h2>Const <code>ISSUERCERT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-keypasswd">
+<h2>Const <code>KEYPASSWD</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-krblevel">
+<h2>Const <code>KRBLEVEL</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-localport">
+<h2>Const <code>LOCALPORT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-localportrange">
+<h2>Const <code>LOCALPORTRANGE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-low_speed_limit">
+<h2>Const <code>LOW_SPEED_LIMIT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-low_speed_time">
+<h2>Const <code>LOW_SPEED_TIME</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-mail_auth">
+<h2>Const <code>MAIL_AUTH</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-mail_from">
+<h2>Const <code>MAIL_FROM</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-mail_rcpt">
+<h2>Const <code>MAIL_RCPT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-maxconnects">
+<h2>Const <code>MAXCONNECTS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-maxfilesize">
+<h2>Const <code>MAXFILESIZE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-maxfilesize_large">
+<h2>Const <code>MAXFILESIZE_LARGE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-maxredirs">
+<h2>Const <code>MAXREDIRS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-max_recv_speed_large">
+<h2>Const <code>MAX_RECV_SPEED_LARGE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-max_send_speed_large">
+<h2>Const <code>MAX_SEND_SPEED_LARGE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-netrc">
+<h2>Const <code>NETRC</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-netrc_file">
+<h2>Const <code>NETRC_FILE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-new_directory_perms">
+<h2>Const <code>NEW_DIRECTORY_PERMS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-new_file_perms">
+<h2>Const <code>NEW_FILE_PERMS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-nobody">
+<h2>Const <code>NOBODY</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-noprogress">
+<h2>Const <code>NOPROGRESS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-noproxy">
+<h2>Const <code>NOPROXY</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-nosignal">
+<h2>Const <code>NOSIGNAL</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-opensocketdata">
+<h2>Const <code>OPENSOCKETDATA</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-opensocketfunction">
+<h2>Const <code>OPENSOCKETFUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-password">
+<h2>Const <code>PASSWORD</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-port">
+<h2>Const <code>PORT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-post">
+<h2>Const <code>POST</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-postfields">
+<h2>Const <code>POSTFIELDS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-postfieldsize">
+<h2>Const <code>POSTFIELDSIZE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-postfieldsize_large">
+<h2>Const <code>POSTFIELDSIZE_LARGE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-postquote">
+<h2>Const <code>POSTQUOTE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-postredir">
+<h2>Const <code>POSTREDIR</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-prequote">
+<h2>Const <code>PREQUOTE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-private">
+<h2>Const <code>PRIVATE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-progressdata">
+<h2>Const <code>PROGRESSDATA</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-progressfunction">
+<h2>Const <code>PROGRESSFUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-protocols">
+<h2>Const <code>PROTOCOLS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-proxy">
+<h2>Const <code>PROXY</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-proxyauth">
+<h2>Const <code>PROXYAUTH</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-proxypassword">
+<h2>Const <code>PROXYPASSWORD</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-proxyport">
+<h2>Const <code>PROXYPORT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-proxytype">
+<h2>Const <code>PROXYTYPE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-proxyusername">
+<h2>Const <code>PROXYUSERNAME</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-proxyuserpwd">
+<h2>Const <code>PROXYUSERPWD</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-proxy_transfer_mode">
+<h2>Const <code>PROXY_TRANSFER_MODE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-put">
+<h2>Const <code>PUT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-quote">
+<h2>Const <code>QUOTE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-random_file">
+<h2>Const <code>RANDOM_FILE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-range">
+<h2>Const <code>RANGE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-readfunction">
+<h2>Const <code>READFUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-redir_protocols">
+<h2>Const <code>REDIR_PROTOCOLS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-referer">
+<h2>Const <code>REFERER</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-resolve">
+<h2>Const <code>RESOLVE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-resume_from">
+<h2>Const <code>RESUME_FROM</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-resume_from_large">
+<h2>Const <code>RESUME_FROM_LARGE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-rtsp_client_cseq">
+<h2>Const <code>RTSP_CLIENT_CSEQ</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-rtsp_request">
+<h2>Const <code>RTSP_REQUEST</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-rtsp_server_cseq">
+<h2>Const <code>RTSP_SERVER_CSEQ</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-rtsp_session_id">
+<h2>Const <code>RTSP_SESSION_ID</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-rtsp_stream_uri">
+<h2>Const <code>RTSP_STREAM_URI</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-rtsp_transport">
+<h2>Const <code>RTSP_TRANSPORT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-sasl_ir">
+<h2>Const <code>SASL_IR</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-seekdata">
+<h2>Const <code>SEEKDATA</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-seekfunction">
+<h2>Const <code>SEEKFUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-server_response_timeout">
+<h2>Const <code>SERVER_RESPONSE_TIMEOUT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-share">
+<h2>Const <code>SHARE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-sockoptdata">
+<h2>Const <code>SOCKOPTDATA</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-sockoptfunction">
+<h2>Const <code>SOCKOPTFUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-socks5_gssapi_nec">
+<h2>Const <code>SOCKS5_GSSAPI_NEC</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-socks5_gssapi_service">
+<h2>Const <code>SOCKS5_GSSAPI_SERVICE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ssh_auth_types">
+<h2>Const <code>SSH_AUTH_TYPES</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ssh_host_public_key_md5">
+<h2>Const <code>SSH_HOST_PUBLIC_KEY_MD5</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ssh_keydata">
+<h2>Const <code>SSH_KEYDATA</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ssh_keyfunction">
+<h2>Const <code>SSH_KEYFUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ssh_knownhosts">
+<h2>Const <code>SSH_KNOWNHOSTS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ssh_private_keyfile">
+<h2>Const <code>SSH_PRIVATE_KEYFILE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ssh_public_keyfile">
+<h2>Const <code>SSH_PUBLIC_KEYFILE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-sslcert">
+<h2>Const <code>SSLCERT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-sslcerttype">
+<h2>Const <code>SSLCERTTYPE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-sslengine">
+<h2>Const <code>SSLENGINE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-sslengine_default">
+<h2>Const <code>SSLENGINE_DEFAULT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-sslkey">
+<h2>Const <code>SSLKEY</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-sslkeytype">
+<h2>Const <code>SSLKEYTYPE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-sslversion">
+<h2>Const <code>SSLVERSION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ssl_cipher_list">
+<h2>Const <code>SSL_CIPHER_LIST</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ssl_ctx_data">
+<h2>Const <code>SSL_CTX_DATA</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ssl_ctx_function">
+<h2>Const <code>SSL_CTX_FUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ssl_options">
+<h2>Const <code>SSL_OPTIONS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ssl_sessionid_cache">
+<h2>Const <code>SSL_SESSIONID_CACHE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ssl_verifyhost">
+<h2>Const <code>SSL_VERIFYHOST</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-ssl_verifypeer">
+<h2>Const <code>SSL_VERIFYPEER</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-stderr">
+<h2>Const <code>STDERR</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-tcp_keepalive">
+<h2>Const <code>TCP_KEEPALIVE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-tcp_keepidle">
+<h2>Const <code>TCP_KEEPIDLE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-tcp_keepintvl">
+<h2>Const <code>TCP_KEEPINTVL</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-tcp_nodelay">
+<h2>Const <code>TCP_NODELAY</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-telnetoptions">
+<h2>Const <code>TELNETOPTIONS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-tftp_blksize">
+<h2>Const <code>TFTP_BLKSIZE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-timecondition">
+<h2>Const <code>TIMECONDITION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-timeout">
+<h2>Const <code>TIMEOUT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-timeout_ms">
+<h2>Const <code>TIMEOUT_MS</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-timevalue">
+<h2>Const <code>TIMEVALUE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-tlsauth_password">
+<h2>Const <code>TLSAUTH_PASSWORD</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-tlsauth_type">
+<h2>Const <code>TLSAUTH_TYPE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-tlsauth_username">
+<h2>Const <code>TLSAUTH_USERNAME</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-transfertext">
+<h2>Const <code>TRANSFERTEXT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-transfer_encoding">
+<h2>Const <code>TRANSFER_ENCODING</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-unrestricted_auth">
+<h2>Const <code>UNRESTRICTED_AUTH</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-upload">
+<h2>Const <code>UPLOAD</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-url">
+<h2>Const <code>URL</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-useragent">
+<h2>Const <code>USERAGENT</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-username">
+<h2>Const <code>USERNAME</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-userpwd">
+<h2>Const <code>USERPWD</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-use_ssl">
+<h2>Const <code>USE_SSL</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-verbose">
+<h2>Const <code>VERBOSE</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-wildcardmatch">
+<h2>Const <code>WILDCARDMATCH</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-writedata">
+<h2>Const <code>WRITEDATA</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-writefunction">
+<h2>Const <code>WRITEFUNCTION</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-writeheader">
+<h2>Const <code>WRITEHEADER</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+<div class="section level2" id="const-writeinfo">
+<h2>Const <code>WRITEINFO</code></h2>
+<pre class="rust"><code>i32</code></pre>
+</div>
+</body>
+</html>

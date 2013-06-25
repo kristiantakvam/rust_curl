@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>Module http_client</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="rust.css" type="text/css" />
+</head>
+<body>
+<div id="header">
+<h1 class="title">Module http_client</h1>
+</div>
+<div class='index'>
+
+<ul>
+<li><a href="#struct-httpclient">Struct <code>HttpClient</code></a></li>
+<li><a href="#implementation-of-stdcloneclone-for-httpclient">Implementation <code>of ::std::clone::Clone for HttpClient</code></a> - Automatically derived.</li>
+<li><a href="#implementation-for-httpclient">Implementation <code>for HttpClient</code></a></li>
+</ul>
+</div>
+
+<div class="section level2" id="struct-httpclient">
+<h2>Struct <code>HttpClient</code></h2>
+<pre class="rust"><code>pub struct HttpClient {
+    priv curl: Curl,
+}</code></pre>
+</div>
+<div class="section level2" id="implementation-of-stdcloneclone-for-httpclient">
+<h2>Implementation of <code>::std::clone::Clone</code> for <code>HttpClient</code></h2>
+<p>Automatically derived.</p>
+<div class="section level3" id="method-clone">
+<h3>Method <code>clone</code></h3>
+<pre class="rust"><code>fn clone(&amp;self) -&gt; HttpClient</code></pre>
+</div>
+</div>
+<div class="section level2" id="implementation-for-httpclient">
+<h2>Implementation for <code>HttpClient</code></h2>
+<div class="section level3" id="method-new">
+<h3>Method <code>new</code></h3>
+<pre class="rust"><code>fn new() -&gt; HttpClient</code></pre>
+</div>
+<div class="section level3" id="method-exec">
+<h3>Method <code>exec</code></h3>
+<pre class="rust"><code>fn exec(&amp;self, req: &amp;Request) -&gt; Result&lt;Response, ~str&gt;</code></pre>
+</div>
+</div>
+</body>
+</html>
