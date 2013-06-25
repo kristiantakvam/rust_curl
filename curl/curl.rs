@@ -34,6 +34,12 @@ extern {
     pub fn curl_slist_free_all(list: *curl_slist) -> c_void;
 }
 
+macro_rules! dbg(
+    () => (
+        println("Ok so far");
+    )
+)
+
 #[deriving(Eq)]
 pub struct Curl {
     priv curl: *CURL
@@ -96,19 +102,34 @@ impl Curl {
         unsafe {
             curl_easy_reset(self.curl);
         }
-    }
-    
-    pub fn easy_strerror(c: code::Code) -> ~str {
-        use std::str::raw::from_c_str;
-        
-        unsafe {
-            let c32: i32 = transmute::<code::Code,i64>(c).to_i32();
-            let raw = curl_easy_strerror(c32);
-            let ret = from_c_str(raw);
-            ret
-        }
-    }            
+    }         
 }
+
+pub fn easy_strerror(c: code::Code) -> ~str {
+    use std::str::raw::from_c_str;
+    
+    unsafe {
+        let c32: i32 = transmute::<code::Code,i64>(c).to_i32();
+        let raw = curl_easy_strerror(c32);
+        let ret = from_c_str(raw);
+        ret
+    }
+}
+
+pub fn get(url: &str) -> Result<~[u8],~str> {
+	let curl = Curl::new();
+	do url.as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
+	curl.easy_setopt(opt::HEADER,1);
+	curl.easy_setopt(opt::WRITEFUNCTION, write_fn);
+	let data: ~[u8] = ~[];
+	curl.easy_setopt(opt::WRITEDATA, &data);
+	let err = curl.easy_perform();
+	
+	match err {
+		code::CURLE_OK => { Ok(data) }
+		_ => { Err(easy_strerror(err)) }
+	}
+}   
 
 impl Clone for Curl {
     pub fn clone(&self) -> Curl {
@@ -127,28 +148,30 @@ impl Drop for Curl {
     }
 }
 
-extern "C" fn write_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
-    use std::str::raw::from_c_str_len;
-    use std::str::*;
+extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
+    use std::vec::raw::from_buf_raw;
     
-    let s: &mut ~str = unsafe { transmute(user_data) };
-    unsafe { push_str(s, from_c_str_len(data,(size * nmemb) as uint)); }
+    let s: &mut ~[u8] = unsafe { transmute(user_data) };
+    let new_data = unsafe { from_buf_raw(data, (size * nmemb) as uint) };
+    s.push_all_move(new_data);
     size * nmemb
 }
+
+
 
 extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::str::raw::from_c_str_len;
     use std::str::*;
     
     let head = unsafe { from_c_str_len(data,(size * nmemb) as uint) };
-    
+
     let colon_res = head.find(':');
     if colon_res.is_none() { return size * nmemb; }
-    
+
     let colon = colon_res.get();
-    let (name, value) = (head.substr(0,colon), head.substr(colon + 2 ,head.len() - colon - 3) );
+    let (name, value) = (head.slice(0,colon), head.slice(colon + 2 ,head.len() - 1) );
     if name == "Set-Cookie" { return size * nmemb; }
-    
+
     let h: &mut HashMap<~str,~str> = unsafe { transmute(user_data) };
     h.insert(name.to_owned(),value.to_owned());
     size * nmemb
@@ -166,11 +189,11 @@ fn test_init_clone() {
 fn test_easy_escape() {
     let c1 = Curl::new();
 
-    let query = "lol and stuff";
+    let query = ~"lol and stuff";
     let escaped_query = c1.easy_escape(query);
     let unescaped_query = c1.easy_unescape(escaped_query);
     
-    assert!(escaped_query == "lol%20and%20stuff");
+    assert!(escaped_query == ~"lol%20and%20stuff");
     assert!(unescaped_query == query);
 }
 
@@ -182,7 +205,7 @@ fn test_basic_functionality() {
     curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
     let s = ~"";
     curl.easy_setopt(opt::WRITEDATA, &s);
-    let err = curl.easy_perform(None);
+    let err = curl.easy_perform();
     
     assert!(!s.is_empty());
     assert!(err == code::CURLE_OK);
@@ -201,8 +224,18 @@ fn test_get_headers() {
     let headers: HashMap<~str,~str> = HashMap::new();
     curl.easy_setopt(opt::HEADERDATA,&headers);
     
-    let err = curl.easy_perform(None);
+    let err = curl.easy_perform();
     assert!(!headers.is_empty());
     assert!(!s.is_empty());
     assert!(err == code::CURLE_OK);
+}
+
+#[test]
+fn test_simple_get() {
+	let data_res = get("http://api.4chan.org/pol/threads.json");
+	
+	match data_res {
+		Ok(_) => { ; }
+		Err(msg) => { fail!("Error" + msg); }
+	};
 }

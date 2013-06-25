@@ -53,7 +53,7 @@ impl HttpClient {
         };
         
         if err != code::CURLE_OK {
-            return Err(Curl::easy_strerror(err));
+            return Err(easy_strerror(err));
         }
         
         let resp = Response::new(headers,body);
@@ -65,24 +65,27 @@ impl HttpClient {
 extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::vec::raw::from_buf_raw;
     
-    let body: &mut ~[u8] = unsafe { transmute(user_data) };
-    unsafe { body.push_all_move(from_buf_raw(data,(size * nmemb) as uint)); }
+    let s: &mut ~[u8] = unsafe { transmute(user_data) };
+    let new_data = unsafe { from_buf_raw(data, (size * nmemb) as uint) };
+    s.push_all_move(new_data);
     size * nmemb
 }
+
+
 
 extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::str::raw::from_c_str_len;
     use std::str::*;
     
     let head = unsafe { from_c_str_len(data,(size * nmemb) as uint) };
-    
+
     let colon_res = head.find(':');
     if colon_res.is_none() { return size * nmemb; }
-    
+
     let colon = colon_res.get();
-    let (name, value) = (head.substr(0,colon), head.substr(colon + 2 ,head.len() - colon - 3) );
+    let (name, value) = (head.slice(0,colon), head.slice(colon + 2 ,head.len() - 1) );
     if name == "Set-Cookie" { return size * nmemb; }
-    
+
     let h: &mut HashMap<~str,~str> = unsafe { transmute(user_data) };
     h.insert(name.to_owned(),value.to_owned());
     size * nmemb
@@ -90,7 +93,6 @@ extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: 
 
 #[test]
 fn test_basic_client() {
-    use std::str::from_bytes;
     use headers;
     
     let client = HttpClient::new();
@@ -101,11 +103,10 @@ fn test_basic_client() {
     
     let req = Request::new(url.to_owned(),HashMap::new(),~[]);
     
-    let resp = client.exec(&req).get();
+    let resp_res = client.exec(&req);
     
-    for resp.headers.each |&k, &v| {
-        println(fmt!("%s: %s",k,v));
-    }
-    
-    println(from_bytes(resp.body));
+    match resp_res {
+		Ok(_) => { ; }
+		Err(msg) => { fail!("Error" + msg); }
+	};
 }
