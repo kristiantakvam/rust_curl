@@ -23,6 +23,8 @@
 <li><a href="#implementation-of-drop-for-curl">Implementation <code>of Drop for Curl</code></a></li>
 <li><a href="#function-easy_strerror">Function <code>easy_strerror</code></a> - Converts a curl::code into a it's error string</li>
 <li><a href="#function-get">Function <code>get</code></a> - Convenience function to fetch the body of HTTP response at the given URL</li>
+<li><a href="#function-header_fn">Function <code>header_fn</code></a></li>
+<li><a href="#function-write_fn">Function <code>write_fn</code></a></li>
 <li><a href="curl_code.html">Module <code>curl::code</code></a></li>
 <li><a href="curl_opt.html">Module <code>curl::opt</code></a></li>
 </ul>
@@ -74,7 +76,7 @@
 <div class="section level4" id="arguments">
 <h4>Arguments</h4>
 <ul>
-<li>url - String to be escaped</li>
+<li><code>url</code> - String to be escaped</li>
 </ul>
 </div>
 <div class="section level4" id="safety-note">
@@ -95,7 +97,7 @@ let escaped = curl.easy_escape(query);</code></pre>
 <div class="section level4" id="arguments-1">
 <h4>Arguments</h4>
 <ul>
-<li>s - String to be unescaped</li>
+<li><code>s</code> - String to be unescaped</li>
 </ul>
 </div>
 <div class="section level4" id="safety-note-1">
@@ -116,8 +118,8 @@ let unescaped = curl.easy_unescape(escaped);</code></pre>
 <div class="section level4" id="arguments-2">
 <h4>Arguments</h4>
 <ul>
-<li>opt - option to be set</li>
-<li>val - value of the option being set</li>
+<li><code>opt</code> - option to be set</li>
+<li><code>val</code> - value of the option being set</li>
 </ul>
 </div>
 <div class="section level4" id="safety-note-2">
@@ -139,6 +141,7 @@ curl.easy_setopt(opt::HEADER,1);</code></pre>
 <pre class="rust"><code>let curl = Curl::new();
 do &quot;www.google.com&quot;.as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
 curl.easy_setopt(opt::HEADER,1);
+curl.easy_setopt(opt::WRITEFUNCTION,my_write_fn);
 curl.easy_perform();</code></pre>
 </div>
 </div>
@@ -175,13 +178,15 @@ curl.easy_reset();</code></pre>
 <div class="section level4" id="arguments-3">
 <h4>Arguments</h4>
 <ul>
-<li>c - code to get error string from</li>
+<li><code>c</code> - code to get error string from</li>
 </ul>
 </div>
 <div class="section level4" id="example-6">
 <h4>Example</h4>
 <pre class="rust"><code>let curl = Curl::new();
 do &quot;www.google.com&quot;.as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
+// omitted a few easy_setopt calls, but you need to either set a WRITEFUNCTION
+// or a FILE* as the WRITEDATA to avoid a segfault
 let err = curl.easy_perform();
 let err_str = easy_strerror(err);</code></pre>
 </div>
@@ -193,7 +198,7 @@ let err_str = easy_strerror(err);</code></pre>
 <div class="section level4" id="arguments-4">
 <h4>Arguments</h4>
 <ul>
-<li>url - url to fetch body from</li>
+<li><code>url</code> - url to fetch body from</li>
 </ul>
 </div>
 <div class="section level4" id="example-7">
@@ -206,6 +211,44 @@ match data_res {
     Ok(data) =&gt; { println(from_bytes(data)); }
     Err(msg) =&gt; { fail!(&quot;Error&quot; + msg); }
 };</code></pre>
+</div>
+</div>
+<div class="section level2" id="function-header_fn">
+<h2>Function <code>header_fn</code></h2>
+<pre class="rust"><code>extern fn header_fn(data: *c_char, size: size_t, nmemb: size_t,
+                    user_data: *()) -&gt; size_t</code></pre>
+<p>Callback called by libcurl when it receives another header</p>
+<div class="section level4" id="arguments-5">
+<h4>Arguments</h4>
+<ul>
+<li><code>data</code> - the data received from this call</li>
+<li><code>size</code> - the size each chunk received</li>
+<li><code>nmemb</code> - the number of chunks</li>
+<li><code>user_data</code> - pointer to user_data set with a curl.easy_setopt(opt::HEADERDATA, my_data); call.</li>
+</ul>
+</div>
+<div class="section level4" id="safety-notes">
+<h4>Safety Notes</h4>
+<p>the size of the header data received is (size * nmemb), and in this case you should set user_data to be a reference to a <code>HashMap&lt;~str,~str&gt;</code> although you can write such a function yourself that has different user data</p>
+</div>
+</div>
+<div class="section level2" id="function-write_fn">
+<h2>Function <code>write_fn</code></h2>
+<pre class="rust"><code>extern fn write_fn(data: *u8, size: size_t, nmemb: size_t, user_data: *()) -&gt;
+ size_t</code></pre>
+<p>Write callback called by libcurl when it receives more data</p>
+<div class="section level4" id="arguments-6">
+<h4>Arguments</h4>
+<ul>
+<li><code>data</code> - the data received from this call</li>
+<li><code>size</code> - the size each chunk received</li>
+<li><code>nmemb</code> - the number of chunks</li>
+<li><code>user_data</code> - pointer to user_data set with a curl.easy_setopt(opt::WRITEDATA, my_data); call.</li>
+</ul>
+</div>
+<div class="section level4" id="safety-notes-1">
+<h4>Safety Notes</h4>
+<p>the size of the data received is (size * nmemb), and in this case you should set user_data to be a reference to a ~[u8], although you can write such a function yourself that has different user data</p>
 </div>
 </div>
 </body>

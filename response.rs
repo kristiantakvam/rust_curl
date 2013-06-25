@@ -10,8 +10,8 @@ pub struct Response {
 impl Response {
 	/// Creates a new response struct
 	/// # Arguments
-	/// * headers -	the HTTP headers from the response
-	/// * body -	the body of the HTTP response
+	/// * `headers` -	the HTTP headers from the response
+	/// * `body` -	the body of the HTTP response
 	/// # Example
 	/// ~~~ {.rust}
 	/// use std::str::from_bytes
@@ -22,7 +22,7 @@ impl Response {
     ///
     /// let req = Request::new(url.to_owned(),HashMap::new(),~[]);
     ///
-    /// let resp_res = client.exec(&req);
+    /// let resp_res: Result<Response,~str> = client.exec(&req);
     /// 
     /// match resp_res {
 	/// 	code::CURLE_OK => {

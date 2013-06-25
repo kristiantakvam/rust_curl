@@ -26,7 +26,7 @@ impl HttpClient {
 
 	/// Execute the given request
 	/// # Arguments
-	/// * req -	request to be executed
+	/// * `req` -	request to be executed
 	/// # Example
 	/// ~~~ {.rust}
 	/// use headers;

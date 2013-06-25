@@ -60,7 +60,7 @@ impl Curl {
     
     /// URL-escape a string 
     /// # Arguments
-    /// * url -	String to be escaped
+    /// * `url` -	String to be escaped
     /// # Safety Note 
     /// Not to be used on an entire string
     /// # Example
@@ -85,7 +85,7 @@ impl Curl {
     
     /// un-URL-escape a string
     /// # Arguments
-    /// * s -	String to be unescaped
+    /// * `s` -	String to be unescaped
     /// # Safety Note 
     /// Not to be used on an entire string
     /// # Example
@@ -112,8 +112,8 @@ impl Curl {
     /// Wrapper over the easy_setopt function, which will be called
     /// before calling calling easy_perform.
     /// # Arguments
-    /// * opt - option to be set
-    /// * val - value of the option being set
+    /// * `opt` - option to be set
+    /// * `val` - value of the option being set
     /// # Safety Note
     /// The opt arguments should be one of the values from curl::opt::*;
     /// The val argument can be either a pointer to a function, user 
@@ -136,6 +136,7 @@ impl Curl {
     /// let curl = Curl::new();
     /// do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
     /// curl.easy_setopt(opt::HEADER,1);
+    /// curl.easy_setopt(opt::WRITEFUNCTION,my_write_fn);
     /// curl.easy_perform();
     /// ~~~
     pub fn easy_perform(&self) -> code::Code {
@@ -164,11 +165,13 @@ impl Curl {
 
 /// Converts a curl::code into a it's error string.
 /// # Arguments
-/// * c - code to get error string from
+/// * `c` - code to get error string from
 /// # Example
 /// ~~~ {.rust}
 /// let curl = Curl::new();
 /// do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
+/// // omitted a few easy_setopt calls, but you need to either set a WRITEFUNCTION
+/// // or a FILE* as the WRITEDATA to avoid a segfault
 /// let err = curl.easy_perform();
 /// let err_str = easy_strerror(err);
 /// ~~~
@@ -186,7 +189,7 @@ pub fn easy_strerror(c: code::Code) -> ~str {
 /// Convenience function to fetch the body of HTTP response at the
 /// given URL. You are responsible for ensuring it's properly escaped/
 /// # Arguments
-/// * url - url to fetch body from
+/// * `url` - url to fetch body from
 /// # Example
 /// ~~~ {.rust}
 /// use std::str::from_bytes;
@@ -230,7 +233,18 @@ impl Drop for Curl {
     }
 }
 
-extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
+/// Write callback called by libcurl when it receives more data
+/// # Arguments
+/// * `data` - the data received from this call
+/// * `size` - the size each chunk received
+/// * `nmemb` - the number of chunks
+/// * `user_data` - pointer to user_data set with a 
+/// curl.easy_setopt(opt::WRITEDATA, my_data); call.
+/// # Safety Notes
+/// the size of the data received is (size * nmemb), and in this case
+/// you should set user_data to be a reference to a ~[u8], although
+/// you can write such a function yourself that has different user data
+pub extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::vec::raw::from_buf_raw;
     
     let s: &mut ~[u8] = unsafe { transmute(user_data) };
@@ -239,9 +253,18 @@ extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) 
     size * nmemb
 }
 
-
-
-extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
+/// Callback called by libcurl when it receives another header
+/// # Arguments
+/// * `data` - the data received from this call
+/// * `size` - the size each chunk received
+/// * `nmemb` - the number of chunks
+/// * `user_data` - pointer to user_data set with a 
+/// curl.easy_setopt(opt::HEADERDATA, my_data); call.
+/// # Safety Notes
+/// the size of the header data received is (size * nmemb), and in this case
+/// you should set user_data to be a reference to a `HashMap<~str,~str>`
+/// although you can write such a function yourself that has different user data
+pub extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::str::raw::from_c_str_len;
     use std::str::*;
     

@@ -50,7 +50,7 @@ pub fn example_client_more() {
     let mut headers = HashMap::new();
     headers.insert(headers::request::ACCEPT.to_owned(),~"application/json");
     
-    let req = Request::new(url.to_owned(),HashMap::new(),~[]);
+    let req = Request::new(url.to_owned(),headers,~[]);
     
     let resp_res = client.exec(&req);
     

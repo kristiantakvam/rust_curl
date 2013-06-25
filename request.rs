@@ -17,9 +17,9 @@ pub struct Request {
 impl Request {
 	/// Create a new Request
 	/// # Arguments
-	/// * url -	the URL of the request, properly escaped
-	/// * headers - the HTTP headers you choose to use
-	/// * body - the body of the request
+	/// * `url` -	the URL of the request, properly escaped
+	/// * `headers` - the HTTP headers you choose to use
+	/// * `body` - the body of the request
 	/// # Example
 	/// ~~~ {.rust}
 	/// use std::hashmap::HashMap;

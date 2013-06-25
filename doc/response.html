@@ -46,8 +46,8 @@
 <div class="section level4" id="arguments">
 <h4>Arguments</h4>
 <ul>
-<li>headers - the HTTP headers from the response</li>
-<li>body - the body of the HTTP response</li>
+<li><code>headers</code> - the HTTP headers from the response</li>
+<li><code>body</code> - the body of the HTTP response</li>
 </ul>
 </div>
 <div class="section level4" id="example">
@@ -60,7 +60,7 @@ let url = &quot;http://api.4chan.org/pol/threads.json&quot;;
 
 let req = Request::new(url.to_owned(),HashMap::new(),~[]);
 
-let resp_res = client.exec(&amp;req);
+let resp_res: Result&lt;Response,~str&gt; = client.exec(&amp;req);
  
 match resp_res {
     code::CURLE_OK =&gt; {
