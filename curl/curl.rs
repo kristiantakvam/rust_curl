@@ -123,12 +123,10 @@ impl Curl {
     /// let curl = Curl::new();
     /// curl.easy_setopt(opt::HEADER,1);
     /// ~~~
-    pub fn easy_setopt<T>(&self, opt: i32, val: T) -> code::Code {
-        unsafe {
-            let opt_val = transmute(val);
-            let raw_code = curl_easy_setopt(self.curl, opt, opt_val);
-            transmute(raw_code as i64)
-        }
+    pub unsafe fn easy_setopt<T>(&self, opt: opt::Opt, val: T) -> code::Code {
+        let opt_val = transmute(val);
+        let raw_code = curl_easy_setopt(self.curl, opt as i32, opt_val);
+        transmute(raw_code as i64)
     }
     /// Wrapper over curl_easy_perform (performs the request).
     /// # Example
@@ -203,15 +201,19 @@ pub fn easy_strerror(c: code::Code) -> ~str {
 /// ~~~
 pub fn get(url: &str) -> Result<~[u8],~str> {
     let curl = Curl::new();
-    do url.as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
-    curl.easy_setopt(opt::WRITEFUNCTION, write_fn);
-    let data: ~[u8] = ~[];
-    curl.easy_setopt(opt::WRITEDATA, &data);
-    let err = curl.easy_perform();
+    
+    unsafe {
+        do url.as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
+        curl.easy_setopt(opt::WRITEFUNCTION, write_fn);
+        let data: ~[u8] = ~[];
+        curl.easy_setopt(opt::WRITEDATA, &data);
+    
+        let err = curl.easy_perform();
 
-    match err {
-        code::CURLE_OK => { Ok(data) }
-        _ => { Err(easy_strerror(err)) }
+        match err {
+            code::CURLE_OK => { Ok(data) }
+            _ => { Err(easy_strerror(err)) }
+        }   
     }
 }
 

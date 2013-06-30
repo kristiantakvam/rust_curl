@@ -109,18 +109,22 @@ pub fn example_basic_functionality() {
     use curl::Curl;
     use curl::code;
     use curl::opt;
+    use std::str::from_bytes;
 
     let curl = Curl::new();
-    do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
-    curl.easy_setopt(opt::HEADER,1);
-    curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
-    let s = ~"";
-    curl.easy_setopt(opt::WRITEDATA, &s);
+    let data: ~[u8] = ~[];
+    
+    unsafe {
+        do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
+        curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
+        curl.easy_setopt(opt::WRITEDATA, &data);
+    }
+    
     let err = curl.easy_perform();
 
     match err {
         code::CURLE_OK => {
-            println(s);
+            println(from_bytes(data));
         }
         _ => { fail!(curl::easy_strerror(err)); }
     }
@@ -131,18 +135,20 @@ fn example_get_headers() {
     use curl::Curl;
     use curl::code;
     use curl::opt;
+    use std::str::from_bytes;
 
     let curl = Curl::new();
-    do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
-
-    curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
-    let s = ~"";
-    curl.easy_setopt(opt::WRITEDATA, &s);
-
-    curl.easy_setopt(opt::HEADERFUNCTION,header_fn);
+    let data: ~[u8] = ~[];
     let headers: HashMap<~str,~str> = HashMap::new();
-    curl.easy_setopt(opt::HEADERDATA,&headers);
-
+    
+    unsafe {
+        do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
+        curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
+        curl.easy_setopt(opt::WRITEDATA, &data);
+        curl.easy_setopt(opt::HEADERFUNCTION,header_fn);
+        curl.easy_setopt(opt::HEADERDATA,&headers);
+    }
+    
     let err = curl.easy_perform();
 
     match err {
@@ -150,7 +156,7 @@ fn example_get_headers() {
             for headers.iter().advance | (&k, &v) | {
                 println(fmt!("%s: %s",k,v));
             }
-            println(s);
+            println(from_bytes(data));
         }
         _ => { fail!(curl::easy_strerror(err)); }
     }

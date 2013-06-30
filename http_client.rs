@@ -20,7 +20,9 @@ impl HttpClient {
     /// ~~~
     pub fn new() -> HttpClient {
         let cl = HttpClient { curl: Curl::new() };
-        cl.curl.easy_setopt(opt::FOLLOWLOCATION,1);
+        unsafe {
+            cl.curl.easy_setopt(opt::FOLLOWLOCATION,1);
+        }
         cl
     }
 
@@ -47,17 +49,18 @@ impl HttpClient {
     /// };
     /// ~~~
     pub fn exec(&self, req: &Request) -> Result<Response,~str> {
-        let url = req.url.to_str();
-        do url.as_c_str |c_str| { self.curl.easy_setopt(opt::URL,c_str); }
-
-        self.curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
+        let url = req.url.to_str();        
         let body = ~[];
-        self.curl.easy_setopt(opt::WRITEDATA, &body);
-
-        self.curl.easy_setopt(opt::HEADERFUNCTION,header_fn);
         let headers: HashMap<~str,~str> = HashMap::new();
-        self.curl.easy_setopt(opt::HEADERDATA,&headers);
-
+        
+        unsafe {
+            do url.as_c_str |c_str| { self.curl.easy_setopt(opt::URL,c_str); }
+            self.curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
+            self.curl.easy_setopt(opt::WRITEDATA, &body);
+            self.curl.easy_setopt(opt::HEADERFUNCTION,header_fn);
+            self.curl.easy_setopt(opt::HEADERDATA,&headers);
+        }
+    
         let err = match req.headers.is_empty() {
             true => { self.curl.easy_perform() }
             false => {
