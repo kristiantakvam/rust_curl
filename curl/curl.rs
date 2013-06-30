@@ -306,33 +306,38 @@ fn test_easy_escape() {
 #[test]
 fn test_basic_functionality() {
     let curl = Curl::new();
-    do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
-    curl.easy_setopt(opt::HEADER,1);
-    curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
-    let s = ~"";
-    curl.easy_setopt(opt::WRITEDATA, &s);
+    let data: ~[u8] = ~[];
+    
+    unsafe {
+		do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
+		curl.easy_setopt(opt::HEADER,1);
+		curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
+		curl.easy_setopt(opt::WRITEDATA, &data);
+	}
+	
     let err = curl.easy_perform();
 
-    assert!(!s.is_empty());
+    assert!(!data.is_empty());
     assert!(err == code::CURLE_OK);
 }
 
 #[test]
 fn test_get_headers() {
     let curl = Curl::new();
-    do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
-
-    curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
-    let s = ~"";
-    curl.easy_setopt(opt::WRITEDATA, &s);
-
-    curl.easy_setopt(opt::HEADERFUNCTION,header_fn);
+    let data: ~[u8] = ~[];
     let headers: HashMap<~str,~str> = HashMap::new();
-    curl.easy_setopt(opt::HEADERDATA,&headers);
-
+    
+    unsafe {
+		do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
+		curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
+		curl.easy_setopt(opt::WRITEDATA, &data);
+		curl.easy_setopt(opt::HEADERFUNCTION,header_fn);
+		curl.easy_setopt(opt::HEADERDATA,&headers);
+	}
+	
     let err = curl.easy_perform();
     assert!(!headers.is_empty());
-    assert!(!s.is_empty());
+    assert!(!data.is_empty());
     assert!(err == code::CURLE_OK);
 }
 
