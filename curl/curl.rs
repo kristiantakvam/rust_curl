@@ -226,7 +226,7 @@ impl Clone for Curl {
 
 impl Drop for Curl {
     #[unsafe_destructor]
-    pub fn finalize(&self) {
+    pub fn drop(&self) {
         unsafe {
             curl_easy_cleanup(self.curl);
         }

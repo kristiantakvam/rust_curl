@@ -64,7 +64,7 @@ impl HttpClient {
                 unsafe {
                     let mut list = 0 as *curl_slist;
 
-                    for req.headers.each |&k, &v| {
+                    for req.headers.iter().advance |(&k, &v)| {
                         let h = fmt!("%s: %s",k,v);
 
                         do h.as_c_str |s| {

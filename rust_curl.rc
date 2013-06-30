@@ -32,7 +32,7 @@ fn main() {
 
     let resp = client.exec(&req).get();
 
-    for resp.headers.each |&k, &v| {
+    for resp.headers.iter().advance |(&k, &v)| {
         println(fmt!("%s: %s",k,v));
     }
 
