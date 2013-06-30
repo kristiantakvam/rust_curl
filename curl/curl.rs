@@ -204,7 +204,6 @@ pub fn easy_strerror(c: code::Code) -> ~str {
 pub fn get(url: &str) -> Result<~[u8],~str> {
     let curl = Curl::new();
     do url.as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
-    curl.easy_setopt(opt::HEADER,1);
     curl.easy_setopt(opt::WRITEFUNCTION, write_fn);
     let data: ~[u8] = ~[];
     curl.easy_setopt(opt::WRITEDATA, &data);
