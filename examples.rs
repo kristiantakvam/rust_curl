@@ -57,8 +57,8 @@ pub fn example_client_more() {
     match resp_res {
         Err(msg) => { fail!("Error" + msg); }
         Ok(resp) => {
-            for resp.headers.iter().advance | (&k, &v) | {
-                println(fmt!("%s: %s",k,v));
+            for resp.headers.iter().advance | (k, v) | {
+                println(fmt!("%s: %s",*k,*v));
             }
 
             println(from_bytes(resp.body));
@@ -153,8 +153,8 @@ fn example_get_headers() {
 
     match err {
         code::CURLE_OK => {
-            for headers.iter().advance | (&k, &v) | {
-                println(fmt!("%s: %s",k,v));
+            for headers.iter().advance | (k, v) | {
+                println(fmt!("%s: %s",*k,*v));
             }
             println(from_bytes(data));
         }
