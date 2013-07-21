@@ -20,6 +20,34 @@ pub struct Curl {
     priv curl: *CURL
 }
 
+trait CurlCallback<D, U> {
+    fn curl_get_userdata<'a>(&'a self) -> &'a U;
+    fn curl_get_callback(&self) -> extern "C" fn (data: *D, size: size_t, nmemb: size_t, user_data: *U) -> size_t;
+}
+
+struct SimpleCurlByteBuffer<'self> {
+    data: ~[u8]
+}
+
+impl SimpleCurlByteBuffer {
+    pub fn new() -> SimpleCurlByteBuffer {
+        SimpleCurlByteBuffer { data: ~[] }
+    }
+}
+
+impl CurlCallback<u8, ~[u8]> for SimpleCurlByteBuffer {
+    fn curl_get_userdata<'a>(&'a self) -> &'a ~[u8] {
+        &'a self.data
+    }
+
+    fn curl_get_callback(&self) -> extern "C" fn (data: *u8, size: size_t, nmemb: size_t, user_data: *~[u8]) -> size_t {
+        unsafe {
+            cast::transmute(write_fn)
+        }
+    }
+}
+
+
 impl Curl {
     /// Return a new Curl object
     /// # Example
@@ -118,6 +146,17 @@ impl Curl {
         unsafe {
             curl_easy_setopt(self.curl, opt, val as *c_void)
         }
+    }
+
+    // FIXME wait until generalised traits are implemented in Rust 0.8
+    pub fn easy_setopt_fn_write<T: CurlCallback<u8, ~[u8]>>(&self, callback: &T) -> code::CURLcode {
+        unsafe {
+            let data_val = callback.curl_get_userdata();
+            let fn_val = callback.curl_get_callback();
+            curl_easy_setopt(self.curl, opt::WRITEFUNCTION, cast::transmute(fn_val));
+            curl_easy_setopt(self.curl, opt::WRITEDATA, cast::transmute(data_val));
+        }
+        code::CURLE_OK
     }
 
     pub fn easy_setopt_write_fn(&self, fun: WriteFn) -> code::CURLcode {
@@ -253,6 +292,7 @@ impl Drop for Curl {
     }
 }
 
+
 /// Write callback called by libcurl when it receives more data
 /// # Arguments
 /// * `data` - the data received from this call
@@ -332,16 +372,18 @@ mod test {
     #[test]
     fn test_basic_functionality() {
         let curl = Curl::new();
-        let data: ~[u8] = ~[];
+        
+        let buf = SimpleCurlByteBuffer::new();
 
         curl.easy_setopt_str(opt::URL, "www.google.com");
         curl.easy_setopt_long(opt::HEADER, 1);
-        curl.easy_setopt_write_fn(write_fn);
-        curl.easy_setopt_buf(opt::WRITEDATA, &data);
+        curl.easy_setopt_fn_write(&buf);
+        // curl.easy_setopt_write_fn(write_fn);
+        // curl.easy_setopt_buf(opt::WRITEDATA, &data);
 
         let err = curl.easy_perform();
 
-        assert!(!data.is_empty());
+        assert!(!buf.data.is_empty());
         assert!(err == code::CURLE_OK);
     }
 
