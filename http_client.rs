@@ -5,6 +5,7 @@ use std::cast::transmute;
 use curl::*;
 use request::*;
 use response::Response;
+use curl::curl_ll::{curl_slist,curl_slist_append,curl_slist_free_all};
 
 /// Rather opaque struct serving as HttpClient
 #[deriving(Clone)]

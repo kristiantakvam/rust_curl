@@ -2,42 +2,12 @@ use std::libc::{size_t,c_int,c_void,c_char};
 use std::cast::transmute;
 use std::hashmap::HashMap;
 
+use curl::curl_ll::*;
+
 pub mod opt;
 pub mod code;
+pub mod curl_ll;
 
-type CURL = ();
-type CURLcode = c_int;
-type CURLINFO = c_int;
-
-/// This is a the curl_slist structure, a list of c strings
-///
-/// This is a simple singly-linked list of c_strings
-///     that is obviously an unsafe structure which should
-///     be used properly and cautiously
-pub struct curl_slist {
-    data: *c_char,
-    next: *curl_slist
-}
-
-#[link_args = "-lcurl"]
-extern {
-    pub fn curl_easy_cleanup(handle: *CURL) -> c_void;
-    pub fn curl_easy_duphandle(handle: *CURL) -> *CURL;
-    pub fn curl_easy_escape(curl: *CURL, url: *c_char, length: c_int) -> *c_char;
-    // Skipping get_info
-    pub fn curl_easy_init() -> *CURL;
-    pub fn curl_easy_perform(curl: *CURL) -> CURLcode;
-    // Skipping curl_easy_recv
-    pub fn curl_easy_reset(curl: *CURL) -> c_void;
-    // Skipping curl_easy_send
-    pub fn curl_easy_setopt(handle: *CURL, opt: c_int, val: *c_void) -> CURLcode;
-    pub fn curl_easy_strerror(err: CURLcode) -> *c_char;
-    pub fn curl_easy_unescape(curl: *CURL, url: *c_char, inlength: c_int, outlength: *c_int) -> *c_char;
-    pub fn curl_free(ptr: *c_char) -> c_void;
-
-    pub fn curl_slist_append(list: *curl_slist, s: *c_char) -> *curl_slist;
-    pub fn curl_slist_free_all(list: *curl_slist) -> c_void;
-}
 
 /// This is a an opaque wrapper over the equally opaque
 /// CURL pointer.
@@ -123,11 +93,11 @@ impl Curl {
     /// let curl = Curl::new();
     /// curl.easy_setopt(opt::HEADER,1);
     /// ~~~
-    pub unsafe fn easy_setopt<T>(&self, opt: opt::Opt, val: T) -> code::Code {
+    pub unsafe fn easy_setopt<T>(&self, opt: opt::CURLoption, val: T) -> code::CURLcode {
         let opt_val = transmute(val);
-        let raw_code = curl_easy_setopt(self.curl, opt as i32, opt_val);
-        transmute(raw_code as i64)
+        curl_easy_setopt(self.curl, opt, opt_val)
     }
+
     /// Wrapper over curl_easy_perform (performs the request).
     /// # Example
     /// ~~~ {.rust}
@@ -137,12 +107,9 @@ impl Curl {
     /// curl.easy_setopt(opt::WRITEFUNCTION,my_write_fn);
     /// curl.easy_perform();
     /// ~~~
-    pub fn easy_perform(&self) -> code::Code {
+    pub fn easy_perform(&self) -> code::CURLcode {
         unsafe {
-
-            let raw_code = curl_easy_perform(self.curl);
-
-            transmute(raw_code as i64)
+            curl_easy_perform(self.curl)
         }
     }
 
@@ -173,12 +140,11 @@ impl Curl {
 /// let err = curl.easy_perform();
 /// let err_str = easy_strerror(err);
 /// ~~~
-pub fn easy_strerror(c: code::Code) -> ~str {
+pub fn easy_strerror(c: code::CURLcode) -> ~str {
     use std::str::raw::from_c_str;
 
     unsafe {
-        let c32: i32 = transmute::<code::Code,i64>(c).to_i32();
-        let raw = curl_easy_strerror(c32);
+        let raw = curl_easy_strerror(c);
         let ret = from_c_str(raw);
         ret
     }

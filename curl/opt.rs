@@ -5,7 +5,7 @@ static OFF_T: int = 30_000;
 
 macro_rules! implOpt {
     ( $($name:ident, $typ:expr, $val:expr);* ) => {
-        pub enum Opt {
+        pub enum CURLoption {
             $($name = $typ + $val),* ,
             CURLOPT_LASTENTRY = 0
         }

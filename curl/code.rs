@@ -1,7 +1,7 @@
 /// The various error codes that can be returned from
 /// various cURL operations
 #[deriving(Eq)]
-pub enum Code {
+pub enum CURLcode {
     CURLE_OK = 0,
     CURLE_UNSUPPORTED_PROTOCOL,    /* 1 */
     CURLE_FAILED_INIT,             /* 2 */
