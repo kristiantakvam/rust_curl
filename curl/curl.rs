@@ -1,6 +1,6 @@
 use std::libc::{size_t,c_int,c_void,c_char};
-use std::cast::transmute;
 use std::hashmap::HashMap;
+use std::cast;
 
 use curl::curl_ll::*;
 
@@ -94,7 +94,7 @@ impl Curl {
     /// curl.easy_setopt(opt::HEADER,1);
     /// ~~~
     pub unsafe fn easy_setopt<T>(&self, opt: opt::CURLoption, val: T) -> code::CURLcode {
-        let opt_val = transmute(val);
+        let opt_val = cast::transmute(val);
         curl_easy_setopt(self.curl, opt, opt_val)
     }
 
@@ -214,7 +214,7 @@ impl Drop for Curl {
 pub extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::vec::raw::from_buf_raw;
 
-    let s: &mut ~[u8] = unsafe { transmute(user_data) };
+    let s: &mut ~[u8] = unsafe { cast::transmute(user_data) };
     let new_data = unsafe { from_buf_raw(data, (size * nmemb) as uint) };
     s.push_all_move(new_data);
     size * nmemb
@@ -244,7 +244,7 @@ pub extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_da
     let (name, value) = (head.slice(0,colon), head.slice(colon + 2 ,head.len() - 1) );
     if name == "Set-Cookie" { return size * nmemb; }
 
-    let h: &mut HashMap<~str,~str> = unsafe { transmute(user_data) };
+    let h: &mut HashMap<~str,~str> = unsafe { cast::transmute(user_data) };
     h.insert(name.to_owned(),value.to_owned());
     size * nmemb
 }
