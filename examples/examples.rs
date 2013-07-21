@@ -115,11 +115,9 @@ pub fn example_basic_functionality() {
     let curl = Curl::new();
     let data: ~[u8] = ~[];
 
-    unsafe {
-        do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
-        curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
-        curl.easy_setopt(opt::WRITEDATA, &data);
-    }
+    curl.easy_setopt_str(opt::URL, "www.google.com");
+    curl.easy_setopt_write_fn(write_fn);
+    curl.easy_setopt_buf(opt::WRITEDATA, &data);
 
     let err = curl.easy_perform();
 
@@ -142,14 +140,13 @@ fn example_get_headers() {
     let data: ~[u8] = ~[];
     let headers: HashMap<~str,~str> = HashMap::new();
 
-    unsafe {
-        do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
-        curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
-        curl.easy_setopt(opt::WRITEDATA, &data);
-        curl.easy_setopt(opt::HEADERFUNCTION,header_fn);
-        curl.easy_setopt(opt::HEADERDATA,&headers);
-    }
-
+    
+    curl.easy_setopt_str(opt::URL, "www.google.com");
+    curl.easy_setopt_write_fn(write_fn);
+    curl.easy_setopt_buf(opt::WRITEDATA, &data);
+    curl.easy_setopt_header_fn(header_fn);
+    curl.easy_setopt_map(opt::HEADERDATA, &headers);
+    
     let err = curl.easy_perform();
 
     match err {

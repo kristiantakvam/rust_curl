@@ -1,44 +1,17 @@
 use std::libc::{size_t,c_int,c_void,c_char};
-use std::cast::transmute;
 use std::hashmap::HashMap;
+use std::cast;
+
+use curl::curl_ll::*;
 
 pub mod opt;
 pub mod code;
+pub mod curl_ll;
 
-type CURL = ();
-type CURLcode = c_int;
-type CURLINFO = c_int;
-
-/// This is a the curl_slist structure, a list of c strings
-///
-/// This is a simple singly-linked list of c_strings
-///     that is obviously an unsafe structure which should
-///     be used properly and cautiously
-pub struct curl_slist {
-    data: *c_char,
-    next: *curl_slist
-}
-
-#[link_args = "-lcurl"]
-extern {
-    pub fn curl_easy_cleanup(handle: *CURL) -> c_void;
-    pub fn curl_easy_duphandle(handle: *CURL) -> *CURL;
-    pub fn curl_easy_escape(curl: *CURL, url: *c_char, length: c_int) -> *c_char;
-    // Skipping get_info
-    pub fn curl_easy_init() -> *CURL;
-    pub fn curl_easy_perform(curl: *CURL) -> CURLcode;
-    // Skipping curl_easy_recv
-    pub fn curl_easy_reset(curl: *CURL) -> c_void;
-    // Skipping curl_easy_send
-    pub fn curl_easy_setopt(handle: *CURL, opt: c_int, val: *c_void) -> CURLcode;
-    pub fn curl_easy_strerror(err: CURLcode) -> *c_char;
-    pub fn curl_easy_unescape(curl: *CURL, url: *c_char, inlength: c_int, outlength: *c_int)
-        -> *c_char;
-    pub fn curl_free(ptr: *c_char) -> c_void;
-
-    pub fn curl_slist_append(list: *curl_slist, s: *c_char) -> *curl_slist;
-    pub fn curl_slist_free_all(list: *curl_slist) -> c_void;
-}
+// FIXME the extern "C" is broken slightly during type-checking and will work after Rust 0.8
+// type WriteFn = extern "C" fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t;
+type WriteFn = *u8;
+type HeaderFn = *u8;
 
 /// This is a an opaque wrapper over the equally opaque
 /// CURL pointer.
@@ -124,26 +97,74 @@ impl Curl {
     /// let curl = Curl::new();
     /// curl.easy_setopt(opt::HEADER,1);
     /// ~~~
-    pub unsafe fn easy_setopt<T>(&self, opt: opt::Opt, val: T) -> code::Code {
-        let opt_val = transmute(val);
-        let raw_code = curl_easy_setopt(self.curl, opt as i32, opt_val);
-        transmute(raw_code as i64)
+    // FIXME add docs to the appropriate functions below
+    /*
+    unsafe fn easy_setopt<T>(&self, opt: opt::CURLoption, val: T) -> code::CURLcode {
+        let opt_val = cast::transmute(val);
+        curl_easy_setopt(self.curl, opt, opt_val)
     }
+    */
+    
+    // TODO the below need to be checked against their option types to ensure no failure occurs
+
+    pub fn easy_setopt_str(&self, opt: opt::CURLoption, string: &str) -> code::CURLcode {
+        let c_str = string.as_c_str(|x|x);
+        unsafe {
+            curl_easy_setopt(self.curl, opt, c_str as *c_void)
+        }
+    }
+
+    pub fn easy_setopt_long(&self, opt: opt::CURLoption, val: int) -> code::CURLcode {
+        unsafe {
+            curl_easy_setopt(self.curl, opt, val as *c_void)
+        }
+    }
+
+    pub fn easy_setopt_write_fn(&self, fun: WriteFn) -> code::CURLcode {
+        unsafe {
+            let opt_val = cast::transmute(fun);
+            curl_easy_setopt(self.curl, opt::WRITEFUNCTION, opt_val)
+        }
+    }
+
+    pub fn easy_setopt_header_fn(&self, fun: HeaderFn) -> code::CURLcode {
+        unsafe {
+            let opt_val = cast::transmute(fun);
+            curl_easy_setopt(self.curl, opt::HEADERFUNCTION, opt_val)
+        }
+    }
+
+    pub fn easy_setopt_buf(&self, opt: opt::CURLoption, buf: &~[u8]) -> code::CURLcode {
+        unsafe {
+            let opt_val = cast::transmute(buf);
+            curl_easy_setopt(self.curl, opt, opt_val)
+        }
+    }
+
+    pub fn easy_setopt_map<T, U>(&self, opt: opt::CURLoption, buf: &HashMap<T, U>) -> code::CURLcode {
+        unsafe {
+            let opt_val = cast::transmute(buf);
+            curl_easy_setopt(self.curl, opt, opt_val)
+        }
+    }
+
+    pub unsafe fn easy_setopt_slist(&self, opt: opt::CURLoption, val: *curl_slist) -> code::CURLcode {
+        let opt_val = cast::transmute(val);
+        curl_easy_setopt(self.curl, opt, opt_val)
+    }
+
     /// Wrapper over curl_easy_perform (performs the request).
     /// # Example
     /// ~~~ {.rust}
     /// let curl = Curl::new();
-    /// do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
-    /// curl.easy_setopt(opt::HEADER,1);
-    /// curl.easy_setopt(opt::WRITEFUNCTION,my_write_fn);
+    /// curl.easy_setopt_str(opt::URL, "www.google.com");
+    /// curl.easy_setopt_long(opt::HEADER, 1);
+    /// curl.easy_setopt_write_fn(my_write_fn);
     /// curl.easy_perform();
     /// ~~~
-    pub fn easy_perform(&self) -> code::Code {
+    pub fn easy_perform(&self) -> code::CURLcode {
         unsafe {
-
-            let raw_code = curl_easy_perform(self.curl);
-
-            transmute(raw_code as i64)
+            curl_easy_perform(self.curl)
         }
     }
 
@@ -152,7 +173,7 @@ impl Curl {
     /// # Example
     /// ~~~ {.rust}
     /// let curl = Curl::new();
-    /// curl.easy_setopt(opt::HEADER,1);
+    /// curl.easy_setopt_long(opt::HEADER,1);
     /// curl.easy_reset();
     /// ~~~
     pub fn easy_reset(&self) {
@@ -168,18 +189,17 @@ impl Curl {
 /// # Example
 /// ~~~ {.rust}
 /// let curl = Curl::new();
-/// do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
+/// curl.easy_setopt_str(opt::URL, "www.google.com");
 /// // omitted a few easy_setopt calls, but you need to either set a WRITEFUNCTION
 /// // or a FILE* as the WRITEDATA to avoid a segfault
 /// let err = curl.easy_perform();
 /// let err_str = easy_strerror(err);
 /// ~~~
-pub fn easy_strerror(c: code::Code) -> ~str {
+pub fn easy_strerror(c: code::CURLcode) -> ~str {
     use std::str::raw::from_c_str;
 
     unsafe {
-        let c32: i32 = transmute::<code::Code,i64>(c).to_i32();
-        let raw = curl_easy_strerror(c32);
+        let raw = curl_easy_strerror(c);
         let ret = from_c_str(raw);
         ret
     }
@@ -203,18 +223,16 @@ pub fn easy_strerror(c: code::Code) -> ~str {
 pub fn get(url: &str) -> Result<~[u8],~str> {
     let curl = Curl::new();
 
-    unsafe {
-        do url.as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
-        curl.easy_setopt(opt::WRITEFUNCTION, write_fn);
-        let data: ~[u8] = ~[];
-        curl.easy_setopt(opt::WRITEDATA, &data);
+    let data: ~[u8] = ~[];
+    curl.easy_setopt_str(opt::URL, url);
+    curl.easy_setopt_write_fn(write_fn);
+    curl.easy_setopt_buf(opt::WRITEDATA, &data);
 
-        let err = curl.easy_perform();
+    let err = curl.easy_perform();
 
-        match err {
-            code::CURLE_OK => { Ok(data) }
-            _ => { Err(easy_strerror(err)) }
-        }
+    match err {
+        code::CURLE_OK => { Ok(data) }
+        _ => { Err(easy_strerror(err)) }
     }
 }
 
@@ -241,7 +259,7 @@ impl Drop for Curl {
 /// * `size` - the size each chunk received
 /// * `nmemb` - the number of chunks
 /// * `user_data` - pointer to user_data set with a
-/// curl.easy_setopt(opt::WRITEDATA, my_data); call.
+/// curl.easy_setopt_buf(opt::WRITEDATA, my_data); call.
 /// # Safety Notes
 /// the size of the data received is (size * nmemb), and in this case
 /// you should set user_data to be a reference to a ~[u8], although
@@ -250,7 +268,7 @@ pub extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *
     -> size_t {
     use std::vec::raw::from_buf_raw;
 
-    let s: &mut ~[u8] = unsafe { transmute(user_data) };
+    let s: &mut ~[u8] = unsafe { cast::transmute(user_data) };
     let new_data = unsafe { from_buf_raw(data, (size * nmemb) as uint) };
     s.push_all_move(new_data);
     size * nmemb
@@ -262,7 +280,7 @@ pub extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *
 /// * `size` - the size each chunk received
 /// * `nmemb` - the number of chunks
 /// * `user_data` - pointer to user_data set with a
-/// curl.easy_setopt(opt::HEADERDATA, my_data); call.
+/// curl.easy_setopt_map(opt::HEADERDATA, my_data); call.
 /// # Safety Notes
 /// the size of the header data received is (size * nmemb), and in this case
 /// you should set user_data to be a reference to a `HashMap<~str,~str>`
@@ -281,7 +299,7 @@ pub extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_da
     let (name, value) = (head.slice(0,colon), head.slice(colon + 2 ,head.len() - 1) );
     if name == "Set-Cookie" { return size * nmemb; }
 
-    let h: &mut HashMap<~str,~str> = unsafe { transmute(user_data) };
+    let h: &mut HashMap<~str,~str> = unsafe { cast::transmute(user_data) };
     h.insert(name.to_owned(),value.to_owned());
     size * nmemb
 }
@@ -316,12 +334,10 @@ mod test {
         let curl = Curl::new();
         let data: ~[u8] = ~[];
 
-        unsafe {
-            do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
-            curl.easy_setopt(opt::HEADER,1);
-            curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
-            curl.easy_setopt(opt::WRITEDATA, &data);
-        }
+        curl.easy_setopt_str(opt::URL, "www.google.com");
+        curl.easy_setopt_long(opt::HEADER, 1);
+        curl.easy_setopt_write_fn(write_fn);
+        curl.easy_setopt_buf(opt::WRITEDATA, &data);
 
         let err = curl.easy_perform();
 
@@ -335,13 +351,11 @@ mod test {
         let data: ~[u8] = ~[];
         let headers: HashMap<~str,~str> = HashMap::new();
 
-        unsafe {
-            do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
-            curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
-            curl.easy_setopt(opt::WRITEDATA, &data);
-            curl.easy_setopt(opt::HEADERFUNCTION,header_fn);
-            curl.easy_setopt(opt::HEADERDATA,&headers);
-        }
+        curl.easy_setopt_str(opt::URL, "www.google.com");
+        curl.easy_setopt_write_fn(write_fn);
+        curl.easy_setopt_buf(opt::WRITEDATA, &data);
+        curl.easy_setopt_header_fn(header_fn);
+        curl.easy_setopt_map(opt::HEADERDATA,&headers);
 
         let err = curl.easy_perform();
         assert!(!headers.is_empty());

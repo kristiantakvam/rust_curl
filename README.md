@@ -50,15 +50,15 @@ The wrapper I provide around curl is pretty thin, so you should be able to
 ```
 pub fn exec(&self, req: &Request) -> Result<Response,~str> {
         let url = req.url.to_str();
-        do url.as_c_str |c_str| { self.curl.easy_setopt(opt::URL,c_str); }
+        self.curl.easy_setopt_str(opt::URL, url);
         
-        self.curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
+        self.curl.easy_setopt_write_fn(write_fn);
         let body = ~[];
-        self.curl.easy_setopt(opt::WRITEDATA, &body);
+        self.curl.easy_setopt_buf(opt::WRITEDATA, &body);
         
-        self.curl.easy_setopt(opt::HEADERFUNCTION,header_fn);
+        self.curl.easy_setopt_header_fn(header_fn);
         let headers: HashMap<~str,~str> = HashMap::new();
-        self.curl.easy_setopt(opt::HEADERDATA,&headers);
+        self.curl.easy_setopt_map(opt::HEADERDATA, &headers);
         
         let err = match req.headers.is_empty() {
             true => { self.curl.easy_perform() }
@@ -74,7 +74,7 @@ pub fn exec(&self, req: &Request) -> Result<Response,~str> {
                         }
                     }
                     
-                    self.curl.easy_setopt(opt::HTTPHEADER,list);
+                    self.curl.easy_setopt_slist(opt::HTTPHEADER, list):q;
                     let rc = self.curl.easy_perform();
                     curl_slist_free_all(list);
                     rc
