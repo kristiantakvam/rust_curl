@@ -3,7 +3,7 @@ rust_curl
 
 Basic rust wrapper over the curl_easy* interface. Also a very very tiny http client
 
-To build it type ```rustc rust_curl.rc -O```.
+To build it type ```make``` (or ```rustc rust_curl.rc -O``` if you do not have GNU make installed).
 
 If you want to build it with a main function instead of as a library, use
     ```rustc rust_curl.rc -O --bin``` to see the example output provided
@@ -33,6 +33,8 @@ Here is example usage of the laughable "HTTP client" included:
     println(from_bytes(resp.body));
 ```
 
+*FIXME* this is now out of date.
+
 The client is very basic, ignores any cookies that are received (although
     technically you can still send cookies, by adding the "Cookie" header to
     the request HashMap) and so is only suitable for the most basic of use
@@ -52,13 +54,11 @@ pub fn exec(&self, req: &Request) -> Result<Response,~str> {
         let url = req.url.to_str();
         self.curl.easy_setopt_str(opt::URL, url);
         
-        self.curl.easy_setopt_write_fn(write_fn);
-        let body = ~[];
-        self.curl.easy_setopt_buf(opt::WRITEDATA, &body);
+        let body = SimpleCurlByteBuffer::new();
+        let headers = HttpHeaders::new();
         
-        self.curl.easy_setopt_header_fn(header_fn);
-        let headers: HashMap<~str,~str> = HashMap::new();
-        self.curl.easy_setopt_map(opt::HEADERDATA, &headers);
+        self.curl.easy_setopt_callback(opt::WRITEDATA, opt::WRITEFUNCTION, &body);
+        self.curl.easy_setopt_callback(opt::HEADERDATA, opt::HEADERFUNCTION, &headers);
         
         let err = match req.headers.is_empty() {
             true => { self.curl.easy_perform() }
