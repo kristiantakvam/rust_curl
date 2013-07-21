@@ -1,7 +1,7 @@
 #[crate_type = "lib"];
 #[desc="Rust Curl"];
 #[author="Mark Edward Sinclair"];
-#[license="BSD"];
+#[license="MIT"];
 #[link(name = "rust_curl", vers = "0.1")];
 
 extern mod extra;
@@ -13,6 +13,7 @@ pub mod response;
 #[path="curl/curl.rs"]
 pub mod curl;
 pub mod examples;
+#[path="examples/examples.rs"]
 pub mod http_client;
 
 
