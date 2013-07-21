@@ -7,20 +7,20 @@ pub enum CURLcode {
     CURLE_FAILED_INIT,             /* 2 */
     CURLE_URL_MALFORMAT,           /* 3 */
     CURLE_NOT_BUILT_IN,            /* 4 - [was obsoleted in August 2007 for
-                                                                        7.17.0, reused in April 2011 for 7.21.5] */
+                                            7.17.0, reused in April 2011 for 7.21.5] */
     CURLE_COULDNT_RESOLVE_PROXY,   /* 5 */
     CURLE_COULDNT_RESOLVE_HOST,    /* 6 */
     CURLE_COULDNT_CONNECT,         /* 7 */
     CURLE_FTP_WEIRD_SERVER_REPLY,  /* 8 */
     CURLE_REMOTE_ACCESS_DENIED,    /* 9 a service was denied by the server
-                                                                        due to lack of access - when login fails
-                                                                        this is not returned. */
+                                            due to lack of access - when login fails
+                                            this is not returned. */
     CURLE_FTP_ACCEPT_FAILED,       /* 10 - [was obsoleted in April 2006 for
-                                                                        7.15.4, reused in Dec 2011 for 7.24.0]*/
+                                            7.15.4, reused in Dec 2011 for 7.24.0]*/
     CURLE_FTP_WEIRD_PASS_REPLY,    /* 11 */
     CURLE_FTP_ACCEPT_TIMEOUT,      /* 12 - timeout occurred accepting server
-                                                                        [was obsoleted in August 2007 for 7.17.0,
-                                                                        reused in Dec 2011 for 7.24.0]*/
+                                            [was obsoleted in August 2007 for 7.17.0,
+                                            reused in Dec 2011 for 7.24.0]*/
     CURLE_FTP_WEIRD_PASV_REPLY,    /* 13 */
     CURLE_FTP_WEIRD_227_FORMAT,    /* 14 */
     CURLE_FTP_CANT_GET_HOST,       /* 15 */
@@ -64,7 +64,7 @@ pub enum CURLcode {
     CURLE_TELNET_OPTION_SYNTAX ,   /* 49 - Malformed telnet option */
     CURLE_OBSOLETE50,              /* 50 - NOT USED */
     CURLE_PEER_FAILED_VERIFICATION, /* 51 - peer's certificate or fingerprint
-                                                                         wasn't verified fine */
+                                            wasn't verified fine */
     CURLE_GOT_NOTHING,             /* 52 - when this is a specific error */
     CURLE_SSL_ENGINE_NOTFOUND,     /* 53 - SSL crypto engine not found */
     CURLE_SSL_ENGINE_SETFAILED,    /* 54 - can not set SSL crypto engine as
@@ -80,10 +80,10 @@ pub enum CURLcode {
     CURLE_FILESIZE_EXCEEDED,       /* 63 - Maximum file size exceeded */
     CURLE_USE_SSL_FAILED,          /* 64 - Requested FTP SSL level failed */
     CURLE_SEND_FAIL_REWIND,        /* 65 - Sending the data requires a rewind
-                                                                        that failed */
+                                            that failed */
     CURLE_SSL_ENGINE_INITFAILED,   /* 66 - failed to initialise ENGINE */
     CURLE_LOGIN_DENIED,            /* 67 - user, password or similar was not
-                                                                        accepted and we failed to login */
+                                            accepted and we failed to login */
     CURLE_TFTP_NOTFOUND,           /* 68 - file not found on server */
     CURLE_TFTP_PERM,               /* 69 - permission problem on server */
     CURLE_REMOTE_DISK_FULL,        /* 70 - out of disk space on server */
@@ -93,24 +93,24 @@ pub enum CURLcode {
     CURLE_TFTP_NOSUCHUSER,         /* 74 - No such user */
     CURLE_CONV_FAILED,             /* 75 - conversion failed */
     CURLE_CONV_REQD,               /* 76 - caller must register conversion
-                                                                        callbacks using curl_easy_setopt options
-                                                                        CURLOPT_CONV_FROM_NETWORK_FUNCTION,
-                                                                        CURLOPT_CONV_TO_NETWORK_FUNCTION, and
-                                                                        CURLOPT_CONV_FROM_UTF8_FUNCTION */
+                                            callbacks using curl_easy_setopt options
+                                            CURLOPT_CONV_FROM_NETWORK_FUNCTION,
+                                            CURLOPT_CONV_TO_NETWORK_FUNCTION, and
+                                            CURLOPT_CONV_FROM_UTF8_FUNCTION */
     CURLE_SSL_CACERT_BADFILE,      /* 77 - could not load CACERT file, missing
                                                                         or wrong format */
     CURLE_REMOTE_FILE_NOT_FOUND,   /* 78 - remote file not found */
     CURLE_SSH,                     /* 79 - error from the SSH layer, somewhat
-                                                                        generic so the error message will be of
-                                                                        interest when this has happened */
+                                            generic so the error message will be of
+                                            interest when this has happened */
 
     CURLE_SSL_SHUTDOWN_FAILED,     /* 80 - Failed to shut down the SSL
                                                                         connection */
     CURLE_AGAIN,                   /* 81 - socket is not ready for send/recv,
-                                                                        wait till it's ready and try again (Added
-                                                                        in 7.18.2) */
+                                            wait till it's ready and try again (Added
+                                            in 7.18.2) */
     CURLE_SSL_CRL_BADFILE,         /* 82 - could not load CRL file, missing or
-                                                                        wrong format (Added in 7.19.0) */
+                                            wrong format (Added in 7.19.0) */
     CURLE_SSL_ISSUER_ERROR,        /* 83 - Issuer check failed.  (Added in
                                                                         7.19.0) */
     CURLE_FTP_PRET_FAILED,         /* 84 - a PRET command failed */
@@ -119,6 +119,6 @@ pub enum CURLcode {
     CURLE_FTP_BAD_FILE_LIST,       /* 87 - unable to parse FTP file list */
     CURLE_CHUNK_FAILED,            /* 88 - chunk callback reported error */
     CURLE_NO_CONNECTION_AVAILABLE, /* 89 - No connection available, the
-                                                                        session will be queued */
+                                            session will be queued */
     CURL_LAST /* never use! */
 }

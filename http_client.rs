@@ -50,10 +50,10 @@ impl HttpClient {
     /// };
     /// ~~~
     pub fn exec(&self, req: &Request) -> Result<Response,~str> {
-        let url = req.url.to_str();        
+        let url = req.url.to_str();
         let body = ~[];
         let headers: HashMap<~str,~str> = HashMap::new();
-        
+
         unsafe {
             do url.as_c_str |c_str| { self.curl.easy_setopt(opt::URL,c_str); }
             self.curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
@@ -61,7 +61,7 @@ impl HttpClient {
             self.curl.easy_setopt(opt::HEADERFUNCTION,header_fn);
             self.curl.easy_setopt(opt::HEADERDATA,&headers);
         }
-    
+
         let err = match req.headers.is_empty() {
             true => { self.curl.easy_perform() }
             false => {

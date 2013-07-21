@@ -86,7 +86,8 @@ pub extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *
 /// This function is passed as the HEADERFUNCTION variable in curl::easy_setopt.
 /// It's a simple demo. You can reimplement similar functions as needed
 /// in curl::easy_setopt
-pub extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
+pub extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: *())
+    -> size_t {
     use std::str::raw::from_c_str_len;
     use std::str::*;
 
@@ -113,13 +114,13 @@ pub fn example_basic_functionality() {
 
     let curl = Curl::new();
     let data: ~[u8] = ~[];
-    
+
     unsafe {
         do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
         curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
         curl.easy_setopt(opt::WRITEDATA, &data);
     }
-    
+
     let err = curl.easy_perform();
 
     match err {
@@ -140,7 +141,7 @@ fn example_get_headers() {
     let curl = Curl::new();
     let data: ~[u8] = ~[];
     let headers: HashMap<~str,~str> = HashMap::new();
-    
+
     unsafe {
         do "www.google.com".as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
         curl.easy_setopt(opt::WRITEFUNCTION,write_fn);
@@ -148,7 +149,7 @@ fn example_get_headers() {
         curl.easy_setopt(opt::HEADERFUNCTION,header_fn);
         curl.easy_setopt(opt::HEADERDATA,&headers);
     }
-    
+
     let err = curl.easy_perform();
 
     match err {
