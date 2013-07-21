@@ -141,7 +141,7 @@ curl.easy_setopt(opt::HEADER,1);</code></pre>
 <pre class="rust"><code>let curl = Curl::new();
 do &quot;www.google.com&quot;.as_c_str |c_str| { curl.easy_setopt(opt::URL,c_str); }
 curl.easy_setopt(opt::HEADER,1);
-curl.easy_setopt(opt::WRITEFUNCTION,my_write_fn);
+curl.easy_setopt_write_fn(my_write_fn);
 curl.easy_perform();</code></pre>
 </div>
 </div>

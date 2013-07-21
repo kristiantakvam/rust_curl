@@ -12,8 +12,9 @@ pub mod response;
 
 #[path="curl/curl.rs"]
 pub mod curl;
-pub mod examples;
+
 #[path="examples/examples.rs"]
+pub mod examples;
 pub mod http_client;
 
 

@@ -1,4 +1,4 @@
-use std::libc::{c_void, c_long, c_int, c_char, c_void};
+use std::libc::{c_long, c_int, c_char, c_void};
 
 use curl::code::CURLcode;
 use curl::opt::CURLoption;
