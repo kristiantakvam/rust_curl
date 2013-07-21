@@ -32,7 +32,10 @@ fn main() {
 
     let req = Request::new(url.to_owned(),headers,~[]);
 
-    let resp = client.exec(&req).get();
+    let resp = match client.exec(&req) {
+        Ok(response) => response,
+        Err(msg) => fail!(msg),
+    };
 
     for resp.headers.iter().advance |(k, v)| {
         println(fmt!("%s: %s",*k,*v));

@@ -119,22 +119,29 @@ extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: 
     size * nmemb
 }
 
-#[test]
-fn test_basic_client() {
-    use headers;
+#[cfg(test)]
+mod test {
+    use super::*;
+    use std::hashmap::HashMap;
+    use request::Request;
 
-    let client = HttpClient::new();
+    #[test]
+    fn test_basic_client() {
+        use headers;
 
-    let url = "http://api.4chan.org/pol/threads.json";
-    let mut headers = HashMap::new();
-    headers.insert(headers::request::ACCEPT.to_owned(),~"application/json");
+        let client = HttpClient::new();
 
-    let req = Request::new(url.to_owned(),HashMap::new(),~[]);
+        let url = "http://api.4chan.org/pol/threads.json";
+        let mut headers = HashMap::new();
+        headers.insert(headers::request::ACCEPT.to_owned(),~"application/json");
 
-    let resp_res = client.exec(&req);
+        let req = Request::new(url.to_owned(),HashMap::new(),~[]);
 
-    match resp_res {
-        Ok(_) => { ; }
-        Err(msg) => { fail!("Error" + msg); }
-    };
+        let resp_res = client.exec(&req);
+
+        match resp_res {
+            Ok(_) => { ; }
+            Err(msg) => { fail!("Error" + msg); }
+        };
+    }
 }

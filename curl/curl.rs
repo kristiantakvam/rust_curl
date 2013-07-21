@@ -304,66 +304,72 @@ pub extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_da
     size * nmemb
 }
 
-#[test]
-fn test_init_clone() {
-    let c1 = Curl::new();
-    let c2 = c1.clone();
+#[cfg(test)]
+mod test {
+    use super::*;
+    use std::hashmap::HashMap;
 
-    assert!(c1.curl != c2.curl);
-}
+    #[test]
+    fn test_init_clone() {
+        let c1 = Curl::new();
+        let c2 = c1.clone();
 
-#[test]
-fn test_easy_escape() {
-    let c1 = Curl::new();
+        assert!(c1.curl != c2.curl);
+    }
 
-    let query = ~"lol and stuff";
-    let escaped_query = c1.easy_escape(query);
-    let unescaped_query = c1.easy_unescape(escaped_query);
+    #[test]
+    fn test_easy_escape() {
+        let c1 = Curl::new();
 
-    assert!(escaped_query == ~"lol%20and%20stuff");
-    assert!(unescaped_query == query);
-}
+        let query = ~"lol and stuff";
+        let escaped_query = c1.easy_escape(query);
+        let unescaped_query = c1.easy_unescape(escaped_query);
 
-#[test]
-fn test_basic_functionality() {
-    let curl = Curl::new();
-    let data: ~[u8] = ~[];
+        assert!(escaped_query == ~"lol%20and%20stuff");
+        assert!(unescaped_query == query);
+    }
 
-	curl.easy_setopt_str(opt::URL, "www.google.com");
-	curl.easy_setopt_long(opt::HEADER, 1);
-	curl.easy_setopt_write_fn(write_fn);
-	curl.easy_setopt_buf(opt::WRITEDATA, &data);
+    #[test]
+    fn test_basic_functionality() {
+        let curl = Curl::new();
+        let data: ~[u8] = ~[];
 
-    let err = curl.easy_perform();
+        curl.easy_setopt_str(opt::URL, "www.google.com");
+        curl.easy_setopt_long(opt::HEADER, 1);
+        curl.easy_setopt_write_fn(write_fn);
+        curl.easy_setopt_buf(opt::WRITEDATA, &data);
 
-    assert!(!data.is_empty());
-    assert!(err == code::CURLE_OK);
-}
+        let err = curl.easy_perform();
 
-#[test]
-fn test_get_headers() {
-    let curl = Curl::new();
-    let data: ~[u8] = ~[];
-    let headers: HashMap<~str,~str> = HashMap::new();
+        assert!(!data.is_empty());
+        assert!(err == code::CURLE_OK);
+    }
 
-    curl.easy_setopt_str(opt::URL, "www.google.com");
-    curl.easy_setopt_write_fn(write_fn);
-    curl.easy_setopt_buf(opt::WRITEDATA, &data);
-    curl.easy_setopt_header_fn(header_fn);
-    curl.easy_setopt_map(opt::HEADERDATA,&headers);
+    #[test]
+    fn test_get_headers() {
+        let curl = Curl::new();
+        let data: ~[u8] = ~[];
+        let headers: HashMap<~str,~str> = HashMap::new();
 
-    let err = curl.easy_perform();
-    assert!(!headers.is_empty());
-    assert!(!data.is_empty());
-    assert!(err == code::CURLE_OK);
-}
+        curl.easy_setopt_str(opt::URL, "www.google.com");
+        curl.easy_setopt_write_fn(write_fn);
+        curl.easy_setopt_buf(opt::WRITEDATA, &data);
+        curl.easy_setopt_header_fn(header_fn);
+        curl.easy_setopt_map(opt::HEADERDATA,&headers);
 
-#[test]
-fn test_simple_get() {
-    let data_res = get("http://api.4chan.org/pol/threads.json");
+        let err = curl.easy_perform();
+        assert!(!headers.is_empty());
+        assert!(!data.is_empty());
+        assert!(err == code::CURLE_OK);
+    }
 
-    match data_res {
-        Ok(_) => { ; }
-        Err(msg) => { fail!("Error" + msg); }
-    };
+    #[test]
+    fn test_simple_get() {
+        let data_res = get("http://api.4chan.org/pol/threads.json");
+
+        match data_res {
+            Ok(_) => { ; }
+            Err(msg) => { fail!("Error" + msg); }
+        };
+    }
 }
