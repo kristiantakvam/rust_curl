@@ -12,8 +12,8 @@ pub mod response;
 
 #[path="curl/curl.rs"]
 pub mod curl;
-pub mod examples;
 #[path="examples/examples.rs"]
+pub mod examples;
 pub mod http_client;
 
 
@@ -31,7 +31,10 @@ fn main() {
 
     let req = Request::new(url.to_owned(),headers,~[]);
 
-    let resp = client.exec(&req).get();
+    let resp = match client.exec(&req) {
+        Ok(response) => response,
+        Err(msg) => fail!(msg),
+    };
 
     for resp.headers.iter().advance |(k, v)| {
         println(fmt!("%s: %s",*k,*v));
