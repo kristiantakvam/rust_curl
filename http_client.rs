@@ -44,7 +44,7 @@ impl HttpClient {
     /// ~~~
     pub fn new() -> HttpClient {
         let cl = HttpClient { curl: Curl::new() };
-        cl.curl.easy_setopt_long(opt::FOLLOWLOCATION, 1);
+        cl.curl.easy_setopt(FollowLocation(true));
         cl
     }
 
@@ -75,31 +75,33 @@ impl HttpClient {
         let body = SimpleCurlByteBuffer::new();
         let headers = HttpHeaders::new();
 
-        self.curl.easy_setopt_str(opt::URL, url);
+        self.curl.easy_setopt(URL(url));
         self.curl.easy_setopt_callback(opt::WRITEDATA, opt::WRITEFUNCTION, &body);
         self.curl.easy_setopt_callback(opt::HEADERDATA, opt::HEADERFUNCTION, &headers);
 
-        let err = match req.headers.is_empty() {
-            true => { self.curl.easy_perform() }
-            false => {
-                unsafe {
-                    let mut list = 0 as *curl_slist;
+        // FIXME setting headers like this is somewhat nasty - fix this with chaining or something
+        let mut list = 0 as *curl_slist;
+        if !req.headers.is_empty() {
+            unsafe {
+                for req.headers.iter().advance |(k, v)| {
+                    let h = fmt!("%s: %s",*k,*v);
 
-                    for req.headers.iter().advance |(k, v)| {
-                        let h = fmt!("%s: %s",*k,*v);
-
-                        do h.as_c_str |s| {
-                            list = curl_slist_append(list,s);
-                        }
+                    do h.as_c_str |s| {
+                        list = curl_slist_append(list,s);
                     }
-
-                    self.curl.easy_setopt_slist(opt::HTTPHEADER, list);
-                    let rc = self.curl.easy_perform();
-                    curl_slist_free_all(list);
-                    rc
                 }
+                self.curl.easy_setopt(UnsafeStringList(opt::HTTPHEADER, list));
             }
-        };
+        }
+
+        // Do the request
+        let err = self.curl.easy_perform();
+        
+        if list as uint != 0 {
+            unsafe {
+                curl_slist_free_all(list);
+            }
+        }
 
         if err != code::CURLE_OK {
             return Err(easy_strerror(err));

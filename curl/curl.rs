@@ -9,6 +9,21 @@ pub mod code;
 pub mod curl_ll;
 pub mod callback;
 
+pub enum EasyCurlOption<'self> {
+    Username(&'self str),
+    Password(&'self str),
+    Proxy(&'self str, Option<&'self str>, Option<&'self str>),
+    URL(&'self str),
+
+    Referer(&'self str),
+    UnsafeStringList(opt::CURLoption, *curl_slist),
+
+    Timeout(int),
+    VerboseMode(bool),
+    ShowHeaders(bool),
+    FollowLocation(bool)
+}
+
 /// This is a an opaque wrapper over the equally opaque
 /// CURL pointer.
 #[deriving(Eq)]
@@ -79,6 +94,31 @@ impl Curl {
         }
     }
 
+    pub fn easy_setopt<'a>(&self, opt: EasyCurlOption<'a>) -> code::CURLcode {
+        match opt {
+            FollowLocation(enable) => self.easy_setopt_bool(opt::FOLLOWLOCATION, enable),
+            Password(pass) => self.easy_setopt_str(opt::PASSWORD, pass),
+            Proxy(proxy, user, pass) => {
+                self.easy_setopt_str(opt::PROXY, proxy);
+                match user {
+                    Some(u) => self.easy_setopt_str(opt::PROXYUSERNAME, u),
+                    None => code::CURLE_OK
+                };
+                match pass {
+                    Some(p) => self.easy_setopt_str(opt::PROXYPASSWORD, p),
+                    None => code::CURLE_OK
+                }
+            },
+            Referer(referer) => self.easy_setopt_str(opt::REFERER, referer),
+            ShowHeaders(enable) => self.easy_setopt_bool(opt::HEADER, enable),
+            Timeout(secs) => self.easy_setopt_long(opt::TIMEOUT, secs),
+            UnsafeStringList(curlopt, slist) => unsafe { self.easy_setopt_slist(curlopt, slist) },
+            URL(url) => self.easy_setopt_str(opt::URL, url),
+            Username(user) => self.easy_setopt_str(opt::USERNAME, user),
+            VerboseMode(enable) => self.easy_setopt_bool(opt::VERBOSE, enable),
+        }
+    }
+
     /// Wrapper over the easy_setopt function, which will be called
     /// before calling calling easy_perform.
     /// # Arguments
@@ -103,16 +143,21 @@ impl Curl {
     
     // TODO the below need to be checked against their option types to ensure no failure occurs
 
-    pub fn easy_setopt_str(&self, opt: opt::CURLoption, string: &str) -> code::CURLcode {
+    fn easy_setopt_str(&self, opt: opt::CURLoption, string: &str) -> code::CURLcode {
         let c_str = string.as_c_str(|x|x);
         unsafe {
-            curl_easy_setopt(self.curl, opt, c_str as *c_void)
+            fail_on_curl_error(curl_easy_setopt(self.curl, opt, c_str as *c_void))
         }
     }
 
-    pub fn easy_setopt_long(&self, opt: opt::CURLoption, val: int) -> code::CURLcode {
+    #[inline]
+    fn easy_setopt_bool(&self, opt: opt::CURLoption, val: bool) -> code::CURLcode {
+        self.easy_setopt_long(opt, val as int)
+    }
+
+    fn easy_setopt_long(&self, opt: opt::CURLoption, val: int) -> code::CURLcode {
         unsafe {
-            curl_easy_setopt(self.curl, opt, val as *c_void)
+            fail_on_curl_error(curl_easy_setopt(self.curl, opt, val as *c_void))
         }
     }
 
@@ -122,15 +167,15 @@ impl Curl {
         let data_val = callback.curl_get_userdata();
         let fn_val = callback.curl_get_callback();
         unsafe {           
-            curl_easy_setopt(self.curl, dataOpt, cast::transmute(data_val));
-            curl_easy_setopt(self.curl, callbackOpt, cast::transmute(fn_val));
+            fail_on_curl_error(curl_easy_setopt(self.curl, dataOpt, cast::transmute(data_val)));
+            fail_on_curl_error(curl_easy_setopt(self.curl, callbackOpt, cast::transmute(fn_val)));
         }
         code::CURLE_OK
     }
 
-    pub unsafe fn easy_setopt_slist(&self, opt: opt::CURLoption, val: *curl_slist) -> code::CURLcode {
+    unsafe fn easy_setopt_slist(&self, opt: opt::CURLoption, val: *curl_slist) -> code::CURLcode {
         let opt_val = cast::transmute(val);
-        curl_easy_setopt(self.curl, opt, opt_val)
+        fail_on_curl_error(curl_easy_setopt(self.curl, opt, opt_val))
     }
 
     /// Wrapper over curl_easy_perform (performs the request).
@@ -163,6 +208,17 @@ impl Curl {
         }
     }
 }
+
+
+/// Function that fails on any non-OK status code from CURL
+#[inline]
+fn fail_on_curl_error(c: code::CURLcode) -> code::CURLcode {
+    match c {
+        code::CURLE_OK => c,
+        _ => fail!(easy_strerror(c))
+    }
+}
+
 
 /// Converts a curl::code into a it's error string.
 /// # Arguments
@@ -283,5 +339,15 @@ mod test {
             Ok(_) => { ; }
             Err(msg) => { fail!("Error" + msg); }
         };
+    }
+
+    #[test] #[should_fail]
+    fn test_invalid_params_should_fail() {
+        // create a NULL pointer manually and try to pass it into a setopt function
+        use curl::curl_ll::CURL;
+        let curl = Curl { curl: 0 as *CURL };
+
+        // should fail in the curl library and cause task failure
+        curl.easy_setopt_long(opt::HEADER, 1);
     }
 }

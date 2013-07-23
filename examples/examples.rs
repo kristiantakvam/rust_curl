@@ -111,7 +111,7 @@ pub fn example_http_easy_basic_functionality() {
     let curl = Curl::new();
     let buf = ExampleWriteBuf { data: ~[] };
 
-    curl.easy_setopt_str(opt::URL, "www.google.com");
+    curl.easy_setopt(curl::URL("www.google.com"));
     curl.easy_setopt_callback(opt::WRITEDATA, opt::WRITEFUNCTION, &buf);
 
     let err = curl.easy_perform();
