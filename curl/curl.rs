@@ -9,6 +9,16 @@ pub mod code;
 pub mod curl_ll;
 pub mod callback;
 
+/// A set of options available to set on the curl 'request'. 
+/// These generally map one-to-one to the Curl options available via curl_easy_setopt.
+///
+/// Currently, this option list is incomplete and only implements the things necessary for the HTTP examples 
+/// and a tiny bit more.
+///
+/// # Example
+/// ~~~ {.rust}
+/// let opt = Username("alice");
+/// ~~~
 pub enum EasyCurlOption<'self> {
     Username(&'self str),
     Password(&'self str),
@@ -94,6 +104,19 @@ impl Curl {
         }
     }
 
+    /// Set an option (using the easy interface). Wraps the easy_setopt function.
+    /// Options can affect a wide variety of outcomes (headers, proxy details, verbose mode)
+    /// For full documentation refer to the CURL docs.
+    ///
+    /// # Arguments
+    /// * `opt` - option (with value) to set
+    ///
+    /// # Example
+    /// ~~~ {.rust}
+    /// let curl = Curl::new();
+    /// curl.easy_setopt(URL("http://google.com"));
+    /// curl.easy_setopt(VerboseMode(true));
+    /// ~~~
     pub fn easy_setopt<'a>(&self, opt: EasyCurlOption<'a>) -> code::CURLcode {
         match opt {
             FollowLocation(enable) => self.easy_setopt_bool(opt::FOLLOWLOCATION, enable),
@@ -112,56 +135,31 @@ impl Curl {
             Referer(referer) => self.easy_setopt_str(opt::REFERER, referer),
             ShowHeaders(enable) => self.easy_setopt_bool(opt::HEADER, enable),
             Timeout(secs) => self.easy_setopt_long(opt::TIMEOUT, secs),
-            UnsafeStringList(curlopt, slist) => unsafe { self.easy_setopt_slist(curlopt, slist) },
+            UnsafeStringList(curlopt, slist) => self.easy_setopt_slist(curlopt, slist),
             URL(url) => self.easy_setopt_str(opt::URL, url),
             Username(user) => self.easy_setopt_str(opt::USERNAME, user),
             VerboseMode(enable) => self.easy_setopt_bool(opt::VERBOSE, enable),
         }
     }
 
-    /// Wrapper over the easy_setopt function, which will be called
-    /// before calling calling easy_perform.
+    /// Set a callback option (wraps the easy_setopt function).
+    ///
+    /// Callbacks are pairs a functions returning a data value (buffer) and a pointer to a C-callable function
+    /// that will be called by curl to act on the data.
+    ///
+    /// Callbacks are generally used to read/write data in a request (data that is not static in size).
+    ///
     /// # Arguments
-    /// * `opt` - option to be set
-    /// * `val` - value of the option being set
-    /// # Safety Note
-    /// The opt arguments should be one of the values from curl::opt::*;
-    /// The val argument can be either a pointer to a function, user
-    /// supplied data for a Curl callback, a 32bit int, or a 64bit int.
+    /// * `dataOpt` - the CURL type for the data argument
+    /// * `opt` - the CURL type for the callback function
+    /// * `callback` - the encapsulated callback
+    ///
     /// # Example
     /// ~~~ {.rust}
     /// let curl = Curl::new();
-    /// curl.easy_setopt(opt::HEADER,1);
-    /// ~~~
-    // FIXME add docs to the appropriate functions below
-    /*
-    unsafe fn easy_setopt<T>(&self, opt: opt::CURLoption, val: T) -> code::CURLcode {
-        let opt_val = cast::transmute(val);
-        curl_easy_setopt(self.curl, opt, opt_val)
-    }
-    */
-    
-    // TODO the below need to be checked against their option types to ensure no failure occurs
-
-    fn easy_setopt_str(&self, opt: opt::CURLoption, string: &str) -> code::CURLcode {
-        let c_str = string.as_c_str(|x|x);
-        unsafe {
-            fail_on_curl_error(curl_easy_setopt(self.curl, opt, c_str as *c_void))
-        }
-    }
-
-    #[inline]
-    fn easy_setopt_bool(&self, opt: opt::CURLoption, val: bool) -> code::CURLcode {
-        self.easy_setopt_long(opt, val as int)
-    }
-
-    fn easy_setopt_long(&self, opt: opt::CURLoption, val: int) -> code::CURLcode {
-        unsafe {
-            fail_on_curl_error(curl_easy_setopt(self.curl, opt, val as *c_void))
-        }
-    }
-
-    // FIXME wait until generalised traits are implemented in Rust 0.8
+    /// let body = SimpleCurlByteBuffer::new();
+    /// curl.easy_setopt_callback(opt::WRITEDATA, opt::WRITEFUNCTION, &body);
+    /// ~~~    
     pub fn easy_setopt_callback<D, U, T: CurlCallback<D, U>>(&self, dataOpt: opt::CURLoption, 
         callbackOpt: opt::CURLoption, callback: &T) -> code::CURLcode {
         let data_val = callback.curl_get_userdata();
@@ -172,12 +170,7 @@ impl Curl {
         }
         code::CURLE_OK
     }
-
-    unsafe fn easy_setopt_slist(&self, opt: opt::CURLoption, val: *curl_slist) -> code::CURLcode {
-        let opt_val = cast::transmute(val);
-        fail_on_curl_error(curl_easy_setopt(self.curl, opt, opt_val))
-    }
-
+    
     /// Wrapper over curl_easy_perform (performs the request).
     /// # Example
     /// ~~~ {.rust}
@@ -205,6 +198,33 @@ impl Curl {
     pub fn easy_reset(&self) {
         unsafe {
             curl_easy_reset(self.curl);
+        }
+    }
+
+    // TODO the below need to be checked against their option types to ensure no failure occurs
+
+    fn easy_setopt_str(&self, opt: opt::CURLoption, string: &str) -> code::CURLcode {
+        let c_str = string.as_c_str(|x|x);
+        unsafe {
+            fail_on_curl_error(curl_easy_setopt(self.curl, opt, c_str as *c_void))
+        }
+    }
+
+    fn easy_setopt_slist(&self, opt: opt::CURLoption, val: *curl_slist) -> code::CURLcode {
+        unsafe {
+            let opt_val = cast::transmute(val);
+            fail_on_curl_error(curl_easy_setopt(self.curl, opt, opt_val))
+        }
+    }
+
+    #[inline]
+    fn easy_setopt_bool(&self, opt: opt::CURLoption, val: bool) -> code::CURLcode {
+        self.easy_setopt_long(opt, val as int)
+    }
+
+    fn easy_setopt_long(&self, opt: opt::CURLoption, val: int) -> code::CURLcode {
+        unsafe {
+            fail_on_curl_error(curl_easy_setopt(self.curl, opt, val as *c_void))
         }
     }
 }

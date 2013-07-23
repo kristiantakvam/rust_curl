@@ -121,8 +121,7 @@ impl HttpClient {
 /// * `data` - the data received from this call
 /// * `size` - the size each chunk received
 /// * `nmemb` - the number of chunks
-/// * `user_data` - pointer to user_data set with a
-/// curl.easy_setopt_map(opt::HEADERDATA, my_data); call.
+/// * `user_data` - pointer to user_data set when you set up a CurlCallback
 /// # Safety Notes
 /// the size of the header data received is (size * nmemb), and in this case
 /// you should set user_data to be a reference to a `HashMap<~str,~str>`

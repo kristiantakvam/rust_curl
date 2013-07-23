@@ -39,8 +39,7 @@ impl CurlCallback<u8, ~[u8]> for SimpleCurlByteBuffer {
 /// * `data` - the data received from this call
 /// * `size` - the size each chunk received
 /// * `nmemb` - the number of chunks
-/// * `user_data` - pointer to user_data set with a
-/// curl.easy_setopt_buf(opt::WRITEDATA, my_data); call.
+/// * `user_data` - pointer to user_data returned by the CurlCallback.curl_get_userdata fn
 /// # Safety Notes
 /// the size of the data received is (size * nmemb), and in this case
 /// you should set user_data to be a reference to a ~[u8], although
