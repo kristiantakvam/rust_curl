@@ -1,10 +1,10 @@
 use curl;
-use std::hashmap::HashMap;
-use std::libc::{size_t,c_char};
-use std::cast::transmute;
+use curl::callback::{CurlCallback, CurlCallbackType};
+use std::libc::{size_t};
+use std::cast;
 
 /// This function is an example of the simplest functionality
-pub fn example_get() {
+pub fn example_http_get() {
     use std::str::from_bytes;
 
     let data_res = curl::get("http://api.4chan.org/pol/threads.json");
@@ -16,7 +16,7 @@ pub fn example_get() {
 }
 
 /// This function is an example of the http_client usage
-pub fn example_basic_client() {
+pub fn example_http_basic_client() {
     use http_client::HttpClient;
     use std::hashmap::HashMap;
     use std::str::from_bytes;
@@ -77,84 +77,48 @@ pub fn example_client_more() {
 pub extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
     use std::vec::raw::from_buf_raw;
 
-    let s: &mut ~[u8] = unsafe { transmute(user_data) };
+    let s: &mut ~[u8] = unsafe { cast::transmute(user_data) };
     let new_data = unsafe { from_buf_raw(data, (size * nmemb) as uint) };
     s.push_all_move(new_data);
     size * nmemb
 }
 
-/// This function is passed as the HEADERFUNCTION variable in curl::easy_setopt.
-/// It's a simple demo. You can reimplement similar functions as needed
-/// in curl::easy_setopt
-pub extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: *())
-    -> size_t {
-    use std::str::raw::from_c_str_len;
-    use std::str::*;
-
-    let head = unsafe { from_c_str_len(data,(size * nmemb) as uint) };
-
-    let colon_res = head.find(':');
-    if colon_res.is_none() { return size * nmemb; }
-
-    let colon = colon_res.get();
-    let (name, value) = (head.slice(0,colon), head.slice(colon + 2 ,head.len() - 1) );
-    if name == "Set-Cookie" { return size * nmemb; }
-
-    let h: &mut HashMap<~str,~str> = unsafe { transmute(user_data) };
-    h.insert(name.to_owned(),value.to_owned());
-    size * nmemb
+/// Example buffer struct that will be used for the callback function
+struct ExampleWriteBuf {
+    data: ~[u8]
 }
 
-/// This shows some very basic usage of the curl_easy* interface
-pub fn example_basic_functionality() {
-    use curl::Curl;
-    use curl::code;
-    use curl::opt;
-    use std::str::from_bytes;
+/// Example of how to implement the CURL callback interface using a the CurlcCallback trait for a write function
+impl CurlCallback<u8, ~[u8]> for ExampleWriteBuf {
+    fn curl_get_userdata<'a>(&'a self) -> &'a ~[u8] {
+        &'a self.data
+    }
 
-    let curl = Curl::new();
-    let data: ~[u8] = ~[];
-
-    curl.easy_setopt_str(opt::URL, "www.google.com");
-    curl.easy_setopt_write_fn(write_fn);
-    curl.easy_setopt_buf(opt::WRITEDATA, &data);
-
-    let err = curl.easy_perform();
-
-    match err {
-        code::CURLE_OK => {
-            println(from_bytes(data));
+    fn curl_get_callback(&self) -> CurlCallbackType<u8, ~[u8]> {
+        unsafe {
+            cast::transmute(write_fn)
         }
-        _ => { fail!(curl::easy_strerror(err)); }
     }
 }
 
-/// This shows how you'd get headers with curl
-fn example_get_headers() {
+/// This shows some very basic usage of the curl_easy* interface
+pub fn example_http_easy_basic_functionality() {
     use curl::Curl;
     use curl::code;
     use curl::opt;
     use std::str::from_bytes;
 
     let curl = Curl::new();
-    let data: ~[u8] = ~[];
-    let headers: HashMap<~str,~str> = HashMap::new();
+    let buf = ExampleWriteBuf { data: ~[] };
 
-    
-    curl.easy_setopt_str(opt::URL, "www.google.com");
-    curl.easy_setopt_write_fn(write_fn);
-    curl.easy_setopt_buf(opt::WRITEDATA, &data);
-    curl.easy_setopt_header_fn(header_fn);
-    curl.easy_setopt_map(opt::HEADERDATA, &headers);
-    
+    curl.easy_setopt(curl::URL("www.google.com"));
+    curl.easy_setopt_callback(opt::WRITEDATA, opt::WRITEFUNCTION, &buf);
+
     let err = curl.easy_perform();
 
     match err {
         code::CURLE_OK => {
-            for headers.iter().advance | (k, v) | {
-                println(fmt!("%s: %s",*k,*v));
-            }
-            println(from_bytes(data));
+            println(from_bytes(buf.data));
         }
         _ => { fail!(curl::easy_strerror(err)); }
     }
