@@ -1,10 +1,14 @@
-#[crate_type = "lib"];
-#[desc="Rust Curl"];
-#[author="Mark Edward Sinclair"];
-#[license="MIT"];
-#[link(name = "rust_curl", vers = "0.1")];
+#![crate_type = "lib"]
+#![comment="Rust Curl"]
+#![author="Mark Edward Sinclair"]
+#![license="MIT"]
+#![crate_id="rust_curl#0.1"]
+#![feature(globs)]
+#![feature(link_args)]
+#![allow(non_camel_case_types)]
+#![allow(ctypes)]
 
-extern mod extra;
+extern crate collections;
 
 pub mod headers;
 pub mod request;
@@ -20,9 +24,9 @@ pub mod http_client;
 
 
 fn main() {
-    use std::hashmap::HashMap;
+    use collections::hashmap::HashMap;
     use request::Request;
-    use std::str::from_bytes;
+    use std::str::from_utf8;
 
     let client = http_client::HttpClient::new();
 
@@ -37,9 +41,9 @@ fn main() {
         Err(msg) => fail!(msg),
     };
 
-    for resp.headers.iter().advance |(k, v)| {
-        println(fmt!("%s: %s",*k,*v));
+    for (k, v) in resp.headers.iter() {
+        println!("{}: {}",*k,*v);
     }
 
-    println(from_bytes(resp.body));
+    println!("{}", from_utf8(resp.body));
 }

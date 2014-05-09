@@ -71,7 +71,7 @@ pub struct curl_slist {
 
 pub type CURL = c_void;
 
-#[link_args = "-lcurl"]
+#[link(name = "curl")]
 extern {
     pub fn curl_global_init(flags: c_long) -> CURLcode;
 

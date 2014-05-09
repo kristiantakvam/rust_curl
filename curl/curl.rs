@@ -19,13 +19,13 @@ pub mod callback;
 /// ~~~ {.rust}
 /// let opt = Username("alice");
 /// ~~~
-pub enum EasyCurlOption<'self> {
-    Username(&'self str),
-    Password(&'self str),
-    Proxy(&'self str, Option<&'self str>, Option<&'self str>),
-    URL(&'self str),
+pub enum EasyCurlOption<'a> {
+    Username(&'a str),
+    Password(&'a str),
+    Proxy(&'a str, Option<&'a str>, Option<&'a str>),
+    URL(&'a str),
 
-    Referer(&'self str),
+    Referer(&'a str),
     UnsafeStringList(opt::CURLoption, *curl_slist),
 
     Timeout(int),
@@ -68,14 +68,14 @@ impl Curl {
         use std::str::raw::from_c_str;
 
         let len = url.len() as c_int;
-        do url.as_c_str |s| {
+        url.with_c_str(|s| {
             unsafe {
                 let raw = curl_easy_escape(self.curl,s,len);
                 let ret = from_c_str(raw);
                 curl_free(raw);
                 ret
             }
-        }
+        })
     }
 
     /// un-URL-escape a string
@@ -90,18 +90,18 @@ impl Curl {
     /// let unescaped = curl.easy_unescape(escaped);
     /// ~~~
     pub fn easy_unescape(&self, s: &str) -> ~str {
-        use std::str::raw::from_c_str_len;
+        use std::str::raw::from_buf_len;
 
-        do s.as_c_str |c_str| {
+        s.with_c_str(|c_str| {
             unsafe {
                 let in_len = s.len() as c_int;
                 let out_len = &(0 as c_int);
                 let raw = curl_easy_unescape(self.curl, c_str, in_len, out_len);
-                let ret = from_c_str_len(raw,*out_len as uint);
+                let ret = from_buf_len(raw as *u8,*out_len as uint);
                 curl_free(raw);
                 ret
             }
-        }
+        })
     }
 
     /// Set an option (using the easy interface). Wraps the easy_setopt function.
@@ -204,10 +204,11 @@ impl Curl {
     // TODO the below need to be checked against their option types to ensure no failure occurs
 
     fn easy_setopt_str(&self, opt: opt::CURLoption, string: &str) -> code::CURLcode {
-        let c_str = string.as_c_str(|x|x);
-        unsafe {
-            fail_on_curl_error(curl_easy_setopt(self.curl, opt, c_str as *c_void))
-        }
+        string.with_c_str(|c_str| {
+            unsafe {
+                fail_on_curl_error(curl_easy_setopt(self.curl, opt, c_str as *c_void))
+            }
+        })
     }
 
     fn easy_setopt_slist(&self, opt: opt::CURLoption, val: *curl_slist) -> code::CURLcode {
@@ -294,7 +295,7 @@ pub fn get(url: &str) -> Result<~[u8],~str> {
 }
 
 impl Clone for Curl {
-    pub fn clone(&self) -> Curl {
+    fn clone(&self) -> Curl {
         unsafe {
             Curl {curl: curl_easy_duphandle(self.curl)}
         }
@@ -303,7 +304,7 @@ impl Clone for Curl {
 
 impl Drop for Curl {
     #[unsafe_destructor]
-    pub fn drop(&self) {
+    fn drop(&mut self) {
         unsafe {
             curl_easy_cleanup(self.curl);
         }

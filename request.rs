@@ -7,7 +7,7 @@ pub enum Method {
 }
 
 /// The HTTP request struct
-#[deriving(ToStr)]
+#[deriving(Show)]
 pub struct Request {
     url: ~str,
     headers: Headers,

@@ -46,7 +46,7 @@ impl CurlCallback<u8, ~[u8]> for SimpleCurlByteBuffer {
 /// you can write such a function yourself that has different user data
 pub extern "C" fn c_curl_write_buf_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *())
     -> size_t {
-    use std::vec::raw::from_buf_raw;
+    use std::slice::raw::from_buf_raw;
 
     let s: &mut ~[u8] = unsafe { cast::transmute(user_data) };
     let new_data = unsafe { from_buf_raw(data, (size * nmemb) as uint) };

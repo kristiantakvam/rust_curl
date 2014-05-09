@@ -5,12 +5,12 @@ use std::cast;
 
 /// This function is an example of the simplest functionality
 pub fn example_http_get() {
-    use std::str::from_bytes;
+    use std::str::from_utf8;
 
     let data_res = curl::get("http://api.4chan.org/pol/threads.json");
 
     match data_res {
-        Ok(data) => { println(from_bytes(data)); }
+        Ok(data) => { println!("{}", from_utf8(data)); }
         Err(msg) => { fail!("Error" + msg); }
     };
 }
@@ -18,8 +18,8 @@ pub fn example_http_get() {
 /// This function is an example of the http_client usage
 pub fn example_http_basic_client() {
     use http_client::HttpClient;
-    use std::hashmap::HashMap;
-    use std::str::from_bytes;
+    use collections::hashmap::HashMap;
+    use std::str::from_utf8;
     use request::Request;
 
     let client = HttpClient::new();
@@ -31,7 +31,7 @@ pub fn example_http_basic_client() {
     let resp_res = client.exec(&req);
 
     match resp_res {
-        Ok(data) => { println(from_bytes(data.body)); }
+        Ok(data) => { println!("{}", from_utf8(data.body)); }
         Err(msg) => { fail!("Error" + msg); }
     };
 }
@@ -39,8 +39,8 @@ pub fn example_http_basic_client() {
 /// A bit more advanced http_client usage
 pub fn example_client_more() {
     use http_client::HttpClient;
-    use std::hashmap::HashMap;
-    use std::str::from_bytes;
+    use collections::hashmap::HashMap;
+    use std::str::from_utf8;
     use request::Request;
     use headers;
 
@@ -57,11 +57,11 @@ pub fn example_client_more() {
     match resp_res {
         Err(msg) => { fail!("Error" + msg); }
         Ok(resp) => {
-            for resp.headers.iter().advance | (k, v) | {
-                println(fmt!("%s: %s",*k,*v));
+            for (k, v) in resp.headers.iter() {
+                println!("{}: {}",*k,*v);
             }
 
-            println(from_bytes(resp.body));
+            println!("{}", from_utf8(resp.body));
         }
     };
 }
@@ -75,7 +75,7 @@ pub fn example_client_more() {
 /// It's a simple demo. You can reimplement similar functions as needed
 /// in curl::easy_setopt
 pub extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
-    use std::vec::raw::from_buf_raw;
+    use std::slice::raw::from_buf_raw;
 
     let s: &mut ~[u8] = unsafe { cast::transmute(user_data) };
     let new_data = unsafe { from_buf_raw(data, (size * nmemb) as uint) };
@@ -106,7 +106,7 @@ pub fn example_http_easy_basic_functionality() {
     use curl::Curl;
     use curl::code;
     use curl::opt;
-    use std::str::from_bytes;
+    use std::str::from_utf8;
 
     let curl = Curl::new();
     let buf = ExampleWriteBuf { data: ~[] };
@@ -118,7 +118,7 @@ pub fn example_http_easy_basic_functionality() {
 
     match err {
         code::CURLE_OK => {
-            println(from_bytes(buf.data));
+            println!("{}", from_utf8(buf.data));
         }
         _ => { fail!(curl::easy_strerror(err)); }
     }

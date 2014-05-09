@@ -1,4 +1,4 @@
-use std::hashmap::HashMap;
+use collections::hashmap::HashMap;
 use std::libc::{size_t,c_char};
 use std::cast;
 
@@ -83,12 +83,12 @@ impl HttpClient {
         let mut list = 0 as *curl_slist;
         if !req.headers.is_empty() {
             unsafe {
-                for req.headers.iter().advance |(k, v)| {
-                    let h = fmt!("%s: %s",*k,*v);
+                for (k, v) in req.headers.iter() {
+                    let h = format!("{}: {}",*k,*v);
 
-                    do h.as_c_str |s| {
+                    h.with_c_str(|s| {
                         list = curl_slist_append(list,s);
-                    }
+                    });
                 }
                 self.curl.easy_setopt(UnsafeStringList(opt::HTTPHEADER, list));
             }
@@ -127,15 +127,16 @@ impl HttpClient {
 /// you should set user_data to be a reference to a `HashMap<~str,~str>`
 /// although you can write such a function yourself that has different user data
 extern "C" fn c_curl_http_header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
-    use std::str::raw::from_c_str_len;
+    use std::str::raw::from_buf_len;
     use std::str::*;
 
-    let head = unsafe { from_c_str_len(data,(size * nmemb) as uint) };
+    let head = unsafe { from_buf_len(data as *u8,(size * nmemb) as uint) };
 
-    let colon_res = head.find(':');
-    if colon_res.is_none() { return size * nmemb; }
+    let colon = match head.find(':') {
+        Some(t) => t,
+        None => { return size * nmemb; },
+    };
 
-    let colon = colon_res.get();
     let (name, value) = (head.slice(0,colon), head.slice(colon + 2 ,head.len() - 1) );
     if name == "Set-Cookie" { return size * nmemb; }
 

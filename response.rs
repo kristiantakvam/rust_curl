@@ -1,7 +1,7 @@
 use headers::Headers;
 
 /// Represents an HTTP response
-#[deriving(ToStr)]
+#[deriving(Show)]
 pub struct Response {
     headers: Headers,
     body: ~[u8]
