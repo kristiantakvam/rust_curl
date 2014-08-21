@@ -1,4 +1,4 @@
-use collections::hashmap::HashMap;
+use std::collections::hashmap::HashMap;
 
 /// This module contains static strings of the HTTP request headers
 /// found on https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requests
@@ -73,4 +73,4 @@ pub mod response {
 }
 
 /// This is a simple type alias for a map of headers
-pub type Headers = HashMap<~str,~str>;
+pub type Headers = HashMap<String,String>;

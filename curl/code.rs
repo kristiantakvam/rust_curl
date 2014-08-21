@@ -1,5 +1,6 @@
 /// The various error codes that can be returned from
 /// various cURL operations
+#[deriving(PartialEq)]
 #[deriving(Eq)]
 pub enum CURLcode {
     CURLE_OK = 0,

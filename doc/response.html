@@ -58,7 +58,7 @@ let client = HttpClient::new();
 
 let url = &quot;http://api.4chan.org/pol/threads.json&quot;;
 
-let req = Request::new(url.to_owned(),HashMap::new(),~[]);
+let req = Request::new(url.to_string(),HashMap::new(),~[]);
 
 let resp_res: Result&lt;Response,~str&gt; = client.exec(&amp;req);
  

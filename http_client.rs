@@ -1,6 +1,6 @@
-use collections::hashmap::HashMap;
-use std::libc::{size_t,c_char};
-use std::cast;
+use std::collections::hashmap::HashMap;
+use libc::{size_t,c_char};
+use std::mem;
 
 use curl::*;
 use curl::callback::*;
@@ -9,7 +9,7 @@ use response::Response;
 use curl::curl_ll::{curl_slist,curl_slist_append,curl_slist_free_all};
 
 struct HttpHeaders {
-    map: HashMap<~str,~str>
+    map: HashMap<String,String>
 }
 
 impl HttpHeaders {
@@ -18,14 +18,14 @@ impl HttpHeaders {
     }
 }
 
-impl CurlCallback<c_char, HashMap<~str,~str>> for HttpHeaders {
-    fn curl_get_userdata<'a>(&'a self) -> &'a HashMap<~str,~str> {
+impl CurlCallback<c_char, HashMap<String,String>> for HttpHeaders {
+    fn curl_get_userdata<'a>(&'a self) -> &'a HashMap<String,String> {
         &'a self.map
     }
 
-    fn curl_get_callback(&self) -> CurlCallbackType<c_char, HashMap<~str,~str>> {
+    fn curl_get_callback(&self) -> CurlCallbackType<c_char, HashMap<String,String>> {
         unsafe {
-            cast::transmute(c_curl_http_header_fn)
+            mem::transmute(c_curl_http_header_fn)
         }
     }
 }
@@ -33,7 +33,7 @@ impl CurlCallback<c_char, HashMap<~str,~str>> for HttpHeaders {
 /// Rather opaque struct serving as HttpClient
 #[deriving(Clone)]
 pub struct HttpClient {
-    priv curl: Curl
+    curl: Curl
 }
 
 impl HttpClient {
@@ -59,9 +59,9 @@ impl HttpClient {
     ///
     /// let url = "http://api.4chan.org/pol/threads.json";
     /// let mut headers = HashMap::new();
-    /// headers.insert(headers::request::ACCEPT.to_owned(),~"application/json");
+    /// headers.insert(headers::request::ACCEPT.to_string(),~"application/json");
     ///
-    /// let req = Request::new(url.to_owned(),headers,~[]);
+    /// let req = Request::new(url.to_string(),headers,~[]);
     ///
     /// let resp_res = client.exec(&req);
     ///
@@ -70,12 +70,12 @@ impl HttpClient {
     ///     Err(msg) => { fail!("Error" + msg); }
     /// };
     /// ~~~
-    pub fn exec(&self, req: &Request) -> Result<Response,~str> {
+    pub fn exec(&self, req: &Request) -> Result<Response,String> {
         let url = req.url.to_str();
         let body = SimpleCurlByteBuffer::new();
         let headers = HttpHeaders::new();
 
-        self.curl.easy_setopt(URL(url));
+        self.curl.easy_setopt(URL(url.as_slice()));
         self.curl.easy_setopt_callback(opt::WRITEDATA, opt::WRITEFUNCTION, &body);
         self.curl.easy_setopt_callback(opt::HEADERDATA, opt::HEADERFUNCTION, &headers);
 
@@ -132,16 +132,16 @@ extern "C" fn c_curl_http_header_fn (data: *c_char, size: size_t, nmemb: size_t,
 
     let head = unsafe { from_buf_len(data as *u8,(size * nmemb) as uint) };
 
-    let colon = match head.find(':') {
+    let colon = match head.as_slice().find(':') {
         Some(t) => t,
         None => { return size * nmemb; },
     };
 
-    let (name, value) = (head.slice(0,colon), head.slice(colon + 2 ,head.len() - 1) );
+    let (name, value) = (head.as_slice().slice(0,colon), head.as_slice().slice(colon + 2 ,head.len() - 1) );
     if name == "Set-Cookie" { return size * nmemb; }
 
-    let h: &mut HashMap<~str,~str> = unsafe { cast::transmute(user_data) };
-    h.insert(name.to_owned(),value.to_owned());
+    let h: &mut HashMap<String,String> = unsafe { mem::transmute(user_data) };
+    h.insert(name.to_string(),value.to_string());
     size * nmemb
 }
 
@@ -159,9 +159,9 @@ mod test {
 
         let url = "http://api.4chan.org/pol/threads.json";
         let mut headers = HashMap::new();
-        headers.insert(headers::request::ACCEPT.to_owned(),~"application/json");
+        headers.insert(headers::request::ACCEPT.to_string(),"application/json".to_str());
 
-        let req = Request::new(url.to_owned(),HashMap::new(),~[]);
+        let req = Request::new(url.to_string(),HashMap::new(),vec![]);
 
         let resp_res = client.exec(&req);
 

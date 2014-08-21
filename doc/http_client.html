@@ -65,9 +65,9 @@ let client = HttpClient::new();
 
 let url = &quot;http://api.4chan.org/pol/threads.json&quot;;
 let mut headers = HashMap::new();
-headers.insert(headers::request::ACCEPT.to_owned(),~&quot;application/json&quot;);
+headers.insert(headers::request::ACCEPT.to_string(),~&quot;application/json&quot;);
 
-let req = Request::new(url.to_owned(),headers,~[]);
+let req = Request::new(url.to_string(),headers,~[]);
 
 let resp_res = client.exec(&amp;req);
 

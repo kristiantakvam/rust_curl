@@ -3,8 +3,8 @@ use headers::Headers;
 /// Represents an HTTP response
 #[deriving(Show)]
 pub struct Response {
-    headers: Headers,
-    body: ~[u8]
+    pub headers: Headers,
+    pub body: Vec<u8>
 }
 
 impl Response {
@@ -20,7 +20,7 @@ impl Response {
     ///
     /// let url = "http://api.4chan.org/pol/threads.json";
     ///
-    /// let req = Request::new(url.to_owned(),HashMap::new(),~[]);
+    /// let req = Request::new(url.to_string(),HashMap::new(),~[]);
     ///
     /// let resp_res: Result<Response,~str> = client.exec(&req);
     ///
@@ -34,7 +34,7 @@ impl Response {
     ///     Err(msg) => { fail!("Error" + msg); }
     /// };
     /// ~~~
-    pub fn new(headers: Headers, body: ~[u8]) -> Response {
+    pub fn new(headers: Headers, body: Vec<u8>) -> Response {
         Response {headers: headers, body: body}
     }
 }

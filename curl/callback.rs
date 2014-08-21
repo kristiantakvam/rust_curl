@@ -1,5 +1,5 @@
-use std::libc::{size_t};
-use std::cast;
+use libc::{size_t};
+use std::mem;
 
 pub type CurlCallbackType<D, U> = extern "C" fn (data: *D, size: size_t, nmemb: size_t, user_data: *U) -> size_t;
 
@@ -11,25 +11,25 @@ pub trait CurlCallback<D, U> {
 
 /// Simple buffer for data retrieved by curl
 pub struct SimpleCurlByteBuffer {
-    data: ~[u8]
+    pub data: Vec<u8>
 }
 
 impl SimpleCurlByteBuffer {
     pub fn new() -> SimpleCurlByteBuffer {
-        SimpleCurlByteBuffer { data: ~[] }
+        SimpleCurlByteBuffer { data: vec![] }
     }
 }
 
 /// Callback implementation for a byte buffer managed by SimpleCurlByteBuffer.
 /// Writing is done by expanding the data buffer whenever the curl library calls the rust callback.
-impl CurlCallback<u8, ~[u8]> for SimpleCurlByteBuffer {
-    fn curl_get_userdata<'a>(&'a self) -> &'a ~[u8] {
+impl CurlCallback<u8, Vec<u8>> for SimpleCurlByteBuffer {
+    fn curl_get_userdata<'a>(&'a self) -> &'a Vec<u8> {
         &'a self.data
     }
 
-    fn curl_get_callback(&self) -> CurlCallbackType<u8, ~[u8]> {
+    fn curl_get_callback(&self) -> CurlCallbackType<u8, Vec<u8>> {
         unsafe {
-            cast::transmute(c_curl_write_buf_fn)
+            mem::transmute(c_curl_write_buf_fn)
         }
     }
 }
@@ -46,10 +46,10 @@ impl CurlCallback<u8, ~[u8]> for SimpleCurlByteBuffer {
 /// you can write such a function yourself that has different user data
 pub extern "C" fn c_curl_write_buf_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *())
     -> size_t {
-    use std::slice::raw::from_buf_raw;
+    use std::vec::raw::from_buf;
 
-    let s: &mut ~[u8] = unsafe { cast::transmute(user_data) };
-    let new_data = unsafe { from_buf_raw(data, (size * nmemb) as uint) };
+    let s: &mut Vec<u8> = unsafe { mem::transmute(user_data) };
+    let new_data = unsafe { from_buf(data, (size * nmemb) as uint) };
     s.push_all_move(new_data);
     size * nmemb
 }

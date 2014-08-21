@@ -9,9 +9,9 @@ pub enum Method {
 /// The HTTP request struct
 #[deriving(Show)]
 pub struct Request {
-    url: ~str,
-    headers: Headers,
-    body: ~[u8]
+    pub url: String,
+    pub headers: Headers,
+    body: Vec<u8>
 }
 
 impl Request {
@@ -25,11 +25,11 @@ impl Request {
     /// use std::hashmap::HashMap;
     ///
     /// let mut headers = HashMap::new();
-    /// headers.insert(headers::request::ACCEPT.to_owned(),~"application/json");
+    /// headers.insert(headers::request::ACCEPT.to_string(),~"application/json");
     ///
-    /// let req = Request::new(url.to_owned(),headers,~[]);
+    /// let req = Request::new(url.to_string(),headers,~[]);
     /// ~~~
-    pub fn new(url: ~str, headers: Headers, body: ~[u8]) -> Request {
+    pub fn new(url: String, headers: Headers, body: Vec<u8>) -> Request {
         Request {url: url, headers: headers, body: body}
     }
 }

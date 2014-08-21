@@ -20,9 +20,9 @@ Here is example usage of the laughable "HTTP client" included:
     
     let url = "http://api.4chan.org/pol/threads.json";
     let mut headers = HashMap::new();
-    headers.insert(headers::request::ACCEPT.to_owned(),~"application/json");
+    headers.insert(headers::request::ACCEPT.to_string(),~"application/json");
 
-    let req = Request::new(url.to_owned(),headers,~[]);
+    let req = Request::new(url.to_string(),headers,~[]);
     
     let resp = client.exec(&req).get();
     
@@ -126,7 +126,7 @@ extern "C" fn header_fn (data: *c_char, size: size_t, nmemb: size_t, user_data: 
     if name == "Set-Cookie" { return size * nmemb; }
     
     let h: &mut HashMap<~str,~str> = unsafe { transmute(user_data) };
-    h.insert(name.to_owned(),value.to_owned());
+    h.insert(name.to_string(),value.to_string());
     size * nmemb
 }
 ```

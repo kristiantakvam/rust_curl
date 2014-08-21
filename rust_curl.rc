@@ -8,7 +8,7 @@
 #![allow(non_camel_case_types)]
 #![allow(ctypes)]
 
-extern crate collections;
+extern crate libc;
 
 pub mod headers;
 pub mod request;
@@ -24,7 +24,7 @@ pub mod http_client;
 
 
 fn main() {
-    use collections::hashmap::HashMap;
+    use std::collections::hashmap::HashMap;
     use request::Request;
     use std::str::from_utf8;
 
@@ -32,9 +32,9 @@ fn main() {
 
     let url = "http://api.4chan.org/pol/threads.json";
     let mut headers = HashMap::new();
-    headers.insert(headers::request::ACCEPT.to_owned(),~"application/json");
+    headers.insert(headers::request::ACCEPT.to_string(),"application/json".to_str());
 
-    let req = Request::new(url.to_owned(),headers,~[]);
+    let req = Request::new(url.to_string(),headers,vec![]);
 
     let resp = match client.exec(&req) {
         Ok(response) => response,
@@ -45,5 +45,5 @@ fn main() {
         println!("{}: {}",*k,*v);
     }
 
-    println!("{}", from_utf8(resp.body));
+    println!("{}", from_utf8(resp.body.as_slice()));
 }

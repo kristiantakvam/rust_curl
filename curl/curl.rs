@@ -1,5 +1,5 @@
-use std::libc::{c_int,c_void};
-use std::cast;
+use libc::{c_int,c_void};
+use std::mem;
 
 use curl::curl_ll::*;
 use curl::callback::{CurlCallback, SimpleCurlByteBuffer};
@@ -36,9 +36,8 @@ pub enum EasyCurlOption<'a> {
 
 /// This is a an opaque wrapper over the equally opaque
 /// CURL pointer.
-#[deriving(Eq)]
 pub struct Curl {
-    priv curl: *CURL
+    curl: *CURL
 }
 
 impl Curl {
@@ -64,7 +63,7 @@ impl Curl {
     /// let query = ~"lol and stuff";
     /// let escaped = curl.easy_escape(query);
     /// ~~~
-    pub fn easy_escape(&self, url: &str) -> ~str {
+    pub fn easy_escape(&self, url: &str) -> String {
         use std::str::raw::from_c_str;
 
         let len = url.len() as c_int;
@@ -89,7 +88,7 @@ impl Curl {
     /// let escaped = ~"lol%20and%20stuff";
     /// let unescaped = curl.easy_unescape(escaped);
     /// ~~~
-    pub fn easy_unescape(&self, s: &str) -> ~str {
+    pub fn easy_unescape(&self, s: &str) -> String {
         use std::str::raw::from_buf_len;
 
         s.with_c_str(|c_str| {
@@ -165,8 +164,8 @@ impl Curl {
         let data_val = callback.curl_get_userdata();
         let fn_val = callback.curl_get_callback();
         unsafe {           
-            fail_on_curl_error(curl_easy_setopt(self.curl, dataOpt, cast::transmute(data_val)));
-            fail_on_curl_error(curl_easy_setopt(self.curl, callbackOpt, cast::transmute(fn_val)));
+            fail_on_curl_error(curl_easy_setopt(self.curl, dataOpt, mem::transmute(data_val)));
+            fail_on_curl_error(curl_easy_setopt(self.curl, callbackOpt, mem::transmute(fn_val)));
         }
         code::CURLE_OK
     }
@@ -213,7 +212,7 @@ impl Curl {
 
     fn easy_setopt_slist(&self, opt: opt::CURLoption, val: *curl_slist) -> code::CURLcode {
         unsafe {
-            let opt_val = cast::transmute(val);
+            let opt_val = mem::transmute(val);
             fail_on_curl_error(curl_easy_setopt(self.curl, opt, opt_val))
         }
     }
@@ -253,7 +252,7 @@ fn fail_on_curl_error(c: code::CURLcode) -> code::CURLcode {
 /// let err = curl.easy_perform();
 /// let err_str = easy_strerror(err);
 /// ~~~
-pub fn easy_strerror(c: code::CURLcode) -> ~str {
+pub fn easy_strerror(c: code::CURLcode) -> String {
     use std::str::raw::from_c_str;
 
     unsafe {
@@ -278,7 +277,7 @@ pub fn easy_strerror(c: code::CURLcode) -> ~str {
 ///     Err(msg) => { fail!("Error" + msg); }
 /// };
 /// ~~~
-pub fn get(url: &str) -> Result<~[u8],~str> {
+pub fn get(url: &str) -> Result<Vec<u8>,String> {
     let curl = Curl::new();
 
     let buf = SimpleCurlByteBuffer::new();
@@ -328,7 +327,7 @@ mod test {
     fn test_easy_escape() {
         let c1 = Curl::new();
 
-        let query = ~"lol and stuff";
+        let query = "lol and stuff".to_str();
         let escaped_query = c1.easy_escape(query);
         let unescaped_query = c1.easy_unescape(escaped_query);
 

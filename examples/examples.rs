@@ -1,7 +1,7 @@
 use curl;
 use curl::callback::{CurlCallback, CurlCallbackType};
-use std::libc::{size_t};
-use std::cast;
+use libc::{size_t};
+use std::mem;
 
 /// This function is an example of the simplest functionality
 pub fn example_http_get() {
@@ -10,15 +10,15 @@ pub fn example_http_get() {
     let data_res = curl::get("http://api.4chan.org/pol/threads.json");
 
     match data_res {
-        Ok(data) => { println!("{}", from_utf8(data)); }
-        Err(msg) => { fail!("Error" + msg); }
+        Ok(data) => { println!("{}", from_utf8(data.as_slice())); }
+        Err(msg) => { fail!("Error".to_str() + msg); }
     };
 }
 
 /// This function is an example of the http_client usage
 pub fn example_http_basic_client() {
     use http_client::HttpClient;
-    use collections::hashmap::HashMap;
+    use std::collections::hashmap::HashMap;
     use std::str::from_utf8;
     use request::Request;
 
@@ -26,20 +26,20 @@ pub fn example_http_basic_client() {
 
     let url = "http://api.4chan.org/pol/threads.json";
 
-    let req = Request::new(url.to_owned(),HashMap::new(),~[]);
+    let req = Request::new(url.to_string(),HashMap::new(),vec![]);
 
     let resp_res = client.exec(&req);
 
     match resp_res {
-        Ok(data) => { println!("{}", from_utf8(data.body)); }
-        Err(msg) => { fail!("Error" + msg); }
+        Ok(data) => { println!("{}", from_utf8(data.body.as_slice())); }
+        Err(msg) => { fail!("Error".to_str() + msg); }
     };
 }
 
 /// A bit more advanced http_client usage
 pub fn example_client_more() {
     use http_client::HttpClient;
-    use collections::hashmap::HashMap;
+    use std::collections::hashmap::HashMap;
     use std::str::from_utf8;
     use request::Request;
     use headers;
@@ -48,20 +48,20 @@ pub fn example_client_more() {
 
     let url = "http://api.4chan.org/pol/threads.json";
     let mut headers = HashMap::new();
-    headers.insert(headers::request::ACCEPT.to_owned(),~"application/json");
+    headers.insert(headers::request::ACCEPT.to_string(),"application/json".to_str());
 
-    let req = Request::new(url.to_owned(),headers,~[]);
+    let req = Request::new(url.to_string(),headers,vec![]);
 
     let resp_res = client.exec(&req);
 
     match resp_res {
-        Err(msg) => { fail!("Error" + msg); }
+        Err(msg) => { fail!("Error".to_str() + msg); }
         Ok(resp) => {
             for (k, v) in resp.headers.iter() {
                 println!("{}: {}",*k,*v);
             }
 
-            println!("{}", from_utf8(resp.body));
+            println!("{}", from_utf8(resp.body.as_slice()));
         }
     };
 }
@@ -75,28 +75,28 @@ pub fn example_client_more() {
 /// It's a simple demo. You can reimplement similar functions as needed
 /// in curl::easy_setopt
 pub extern "C" fn write_fn (data: *u8, size: size_t, nmemb: size_t, user_data: *()) -> size_t {
-    use std::slice::raw::from_buf_raw;
+    use std::vec::raw::from_buf;
 
-    let s: &mut ~[u8] = unsafe { cast::transmute(user_data) };
-    let new_data = unsafe { from_buf_raw(data, (size * nmemb) as uint) };
+    let s: &mut Vec<u8> = unsafe { mem::transmute(user_data) };
+    let new_data = unsafe { from_buf(data, (size * nmemb) as uint) };
     s.push_all_move(new_data);
     size * nmemb
 }
 
 /// Example buffer struct that will be used for the callback function
 struct ExampleWriteBuf {
-    data: ~[u8]
+    data: Vec<u8>
 }
 
 /// Example of how to implement the CURL callback interface using a the CurlcCallback trait for a write function
-impl CurlCallback<u8, ~[u8]> for ExampleWriteBuf {
-    fn curl_get_userdata<'a>(&'a self) -> &'a ~[u8] {
+impl CurlCallback<u8, Vec<u8>> for ExampleWriteBuf {
+    fn curl_get_userdata<'a>(&'a self) -> &'a Vec<u8> {
         &'a self.data
     }
 
-    fn curl_get_callback(&self) -> CurlCallbackType<u8, ~[u8]> {
+    fn curl_get_callback(&self) -> CurlCallbackType<u8, Vec<u8>> {
         unsafe {
-            cast::transmute(write_fn)
+            mem::transmute(write_fn)
         }
     }
 }
@@ -109,7 +109,7 @@ pub fn example_http_easy_basic_functionality() {
     use std::str::from_utf8;
 
     let curl = Curl::new();
-    let buf = ExampleWriteBuf { data: ~[] };
+    let buf = ExampleWriteBuf { data: vec![] };
 
     curl.easy_setopt(curl::URL("www.google.com"));
     curl.easy_setopt_callback(opt::WRITEDATA, opt::WRITEFUNCTION, &buf);
@@ -118,7 +118,7 @@ pub fn example_http_easy_basic_functionality() {
 
     match err {
         code::CURLE_OK => {
-            println!("{}", from_utf8(buf.data));
+            println!("{}", from_utf8(buf.data.as_slice()));
         }
         _ => { fail!(curl::easy_strerror(err)); }
     }

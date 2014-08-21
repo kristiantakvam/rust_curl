@@ -69,9 +69,9 @@
 <pre class="rust"><code>use std::hashmap::HashMap;
  
 let mut headers = HashMap::new();
-headers.insert(headers::request::ACCEPT.to_owned(),~&quot;application/json&quot;);
+headers.insert(headers::request::ACCEPT.to_string(),~&quot;application/json&quot;);
 
-let req = Request::new(url.to_owned(),headers,~[]);</code></pre>
+let req = Request::new(url.to_string(),headers,~[]);</code></pre>
 </div>
 </div>
 </div>
